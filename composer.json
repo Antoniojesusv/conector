@@ -43,7 +43,10 @@
         "symfony/webapp-meta": "^1.0",
         "symfony/webpack-encore-bundle": "^1.12",
         "symfony/yaml": "6.0.*",
+        "twig/cssinliner-extra": "^3.3",
         "twig/extra-bundle": "^2.12|^3.0",
+        "twig/inky-extra": "^3.3",
+        "twig/markdown-extra": "^3.3",
         "twig/twig": "^2.12|^3.0"
     },
     "config": {
@@ -89,11 +92,12 @@
         ],
         "cs-check": "phpcs src/",
         "cs-fix": "php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src/",
-        "major-release": "tools/tag-release.sh -t major",
-        "minor-release": "tools/tag-release.sh -t minor",
-        "patch-release": "tools/tag-release.sh -t patch",
-        "dev" : "docker-compose -f docker-compose.dev.yml up --build",
-        "prod": "docker-compose up --build -d"
+        "check-template": "php bin/console lint:twig",
+        "release:major": "tools/tag-release.sh -t major",
+        "release:minor": "tools/tag-release.sh -t minor",
+        "release:patch": "tools/tag-release.sh -t patch",
+        "build:dev" : "docker-compose -f docker-compose.dev.yml up --build",
+        "build:prod": "docker-compose up --build -d"
     },
     "conflict": {
         "symfony/symfony": "*"
