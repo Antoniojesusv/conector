@@ -92,7 +92,7 @@
         ],
         "cs-check": "phpcs src/",
         "cs-fix": "php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src/",
-        "check-template": "php bin/console lint:twig",
+        "check-template": "php bin/console lint:twig --format=github",
         "release:major": "tools/tag-release.sh -t major",
         "release:minor": "tools/tag-release.sh -t minor",
         "release:patch": "tools/tag-release.sh -t patch",
