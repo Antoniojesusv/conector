@@ -88,7 +88,9 @@
             "@auto-scripts"
         ],
         "cs-check": "phpcs src/",
-        "cs-fix": "php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src/"
+        "cs-fix": "php tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src/",
+        "dev" : "docker-compose -f docker-compose.dev.yml up --build",
+        "prod": "docker-compose up --build -d"
     },
     "conflict": {
         "symfony/symfony": "*"
