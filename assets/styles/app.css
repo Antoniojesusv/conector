@@ -1,3 +1,18 @@
+html {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 body {
     background-color: lightgray;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: 1fr;
+    flex-grow: 1;
+    font-family: merriweather sans,sans-serif;
 }
+
+@import "common/sidebar.css";
+@import "common/main.css";

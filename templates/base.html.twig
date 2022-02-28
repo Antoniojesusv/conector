@@ -12,8 +12,39 @@
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
+
+        <script src="https://kit.fontawesome.com/91a644f283.js" crossorigin="anonymous"></script>
     </head>
-    <body>
-        {% block body %}{% endblock %}
+    <body class="body">
+        {% block body %}
+        <div id="sidebar" class="sidebar">
+            <div class="sidebar__company-container">
+                <figure class="sidebar__logo-container">
+                    <img class="sidebar__logo" src="{{ asset('images/Tiendas_Icon.png') }}" alt="Image could not be loaded" style="width:100%">
+                    {# <figcaption>Fig.1 - Trulli, Puglia, Italy.</figcaption> #}
+                </figure>
+                <span class="sidebar__company-name">Conector</span>
+            </div>
+            <ul class="sidebar__list">
+                <li class="sidebar__list-item">
+                    <a class="sidebar__list-link" href="{{ path('database_index') }}"><i class="fa-solid fa-database sidebar__list-icon"></i>Base de datos</a>
+                </li>
+                <li class="sidebar__list-item">
+                    <a class="sidebar__list-link" href="{{ path('shop_index') }}"><i class="fa-solid fa-shop sidebar__list-icon"></i>Tiendas</a>
+                </li>
+                <li class="sidebar__list-item">
+                    <a class="sidebar__list-link" href="{{ path('synchronise_index') }}"><i class="fa-solid fa-retweet sidebar__list-icon"></i>Sincronización</a>
+                </li>
+                <li class="sidebar__list-item">
+                    <a class="sidebar__list-link" href="{{ path('log_index') }}"><i class="fa-solid fa-book sidebar__list-icon"></i>Logs</a>
+                </li>
+            </ul>
+        </div>
+
+        <main class="main">
+            {% block main_content %}{% endblock %}
+        </main>
+
+        {% endblock %}
     </body>
 </html>

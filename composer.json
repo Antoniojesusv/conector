@@ -7,7 +7,7 @@
         "php": ">=8.0.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "doctrine/annotations": "^1.0",
+        "doctrine/annotations": "^1.13",
         "doctrine/doctrine-bundle": "^2.5",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.11",
@@ -38,6 +38,7 @@
         "symfony/string": "6.0.*",
         "symfony/translation": "6.0.*",
         "symfony/twig-bundle": "6.0.*",
+        "symfony/ux-twig-component": "^2.0",
         "symfony/validator": "6.0.*",
         "symfony/web-link": "6.0.*",
         "symfony/webapp-meta": "^1.0",
@@ -96,8 +97,20 @@
         "release:major": "tools/tag-release.sh -t major",
         "release:minor": "tools/tag-release.sh -t minor",
         "release:patch": "tools/tag-release.sh -t patch",
-        "build:dev" : "docker-compose -f docker-compose.dev.yml up --build",
-        "build:prod": "docker-compose up --build -d"
+        "build:dev" : "npm run watch",
+        "build:prod": "docker-compose up --build -d",
+        "run:dev": "docker-compose -f docker-compose.dev.yml up --build -d",
+        "deploy:dev": [
+            "@run:dev",
+            "@build:dev"
+        ],
+        "deploy:prod": [
+            "@cs-check",
+            "@cs-fix",
+            "@check-template",
+            "@build:prod",
+            "docker-compose -f docker-compose.dev.yml up --build"
+        ]
     },
     "conflict": {
         "symfony/symfony": "*"
