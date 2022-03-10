@@ -16,3 +16,4 @@ body {
 
 @import "common/sidebar.css";
 @import "common/main.css";
+@import "components/table.css";

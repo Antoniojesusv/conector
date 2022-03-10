@@ -1,9 +1,9 @@
-{% extends 'base.html.twig' %}
+{% extends 'main_layout.html.twig' %}
 
 {% block title %}Base de datos{% endblock %}
 
+{% block main_title %}Base de datos{% endblock %}
+
 {% block main_content %}
-    <h1>Base de datos</h1>
-
-
+    {{ component('table') }}
 {% endblock %}

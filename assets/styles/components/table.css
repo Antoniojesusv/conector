@@ -1,0 +1,13 @@
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.table__cell {
+    min-width: 200px;
+    text-align: left;
+}
