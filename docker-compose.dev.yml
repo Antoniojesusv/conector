@@ -26,6 +26,7 @@ services:
     restart: unless-stopped
     depends_on:
       - db
+      - sql-server
     environment:
       - APP_ENV=${APP_ENV}
       - APP_SECRET=${APP_SECRET}
@@ -49,8 +50,22 @@ services:
     volumes:
       - ./data:/var/lib/mysql
       - ./logs/mysql:${MYSQL_LOG_DIR}
+      - ./.docker/mysql/docker-entrypoint-initdb:/docker-entrypoint-initdb.d
     networks:
       - connector_net
+
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      SA_PASSWORD: ${SA_PASSWORD}
+      ACCEPT_EULA: ${ACCEPT_EULA}
+    volumes:
+      - sqlserverdata:/var/opt/mssql
+    ports:
+      - "${SQL_EXPOSED_PORT}:1433"
+
+volumes:
+  sqlserverdata:
 
 networks:
   connector_net:
