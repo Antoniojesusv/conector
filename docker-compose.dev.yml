@@ -15,7 +15,8 @@ services:
       - ./:/var/www
       - ./logs/nginx:/var/log/nginx/
     networks:
-      - connector_net
+      connector_net:
+        ipv4_address: 192.168.1.2
   
   php-fpm:
     container_name: php-fpm
@@ -33,26 +34,28 @@ services:
     volumes:
       - ./:/var/www
     networks:
-      - connector_net
+      connector_net:
+        ipv4_address: 192.168.1.3
 
   db:
-    container_name: db
-    image: mysql:8.0
-    command: --default-authentication-plugin=mysql_native_password
+    build:
+      context: ./.docker/mysql
+    command: --default-authentication-plugin=mysql_native_password --sql-mode=""
     restart: unless-stopped
     ports:
       - "${MYSQL_EXPOSED_PORT}:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
     volumes:
       - ./data:/var/lib/mysql
-      - ./logs/mysql:${MYSQL_LOG_DIR}
+      # - ./logs/mysql:${MYSQL_LOG_DIR}
       - ./.docker/mysql/docker-entrypoint-initdb:/docker-entrypoint-initdb.d
     networks:
-      - connector_net
+      connector_net:
+        ipv4_address: 192.168.1.4
 
   sql-server:
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -62,10 +65,16 @@ services:
     volumes:
       - sqlserverdata:/var/opt/mssql
     ports:
-      - "${SQL_EXPOSED_PORT}:1433"
+      - "${SQL_SERVER_EXPOSED_PORT}:1433"
+    networks:
+      connector_net:
+        ipv4_address: 192.168.1.5
 
 volumes:
   sqlserverdata:
 
 networks:
   connector_net:
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
