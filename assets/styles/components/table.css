@@ -9,5 +9,71 @@
 
 .table__cell {
     min-width: 200px;
+    padding: 1rem 0rem;
     text-align: left;
+    border-top: 1px solid #e9ecef;
+}
+
+.table__cell-status {
+    min-width: 300px;
+}
+
+.table__cell-head {
+    min-width: 200px;
+    padding: 1rem 0rem;
+    text-align: left;
+}
+
+.table__status {
+    display: flex;
+    align-items: center;
+}
+
+.table__link-button {
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid transparent;
+    background-color: #34b673;
+    border-color: #34b673;
+    color: white;
+}
+
+.table__link-button--dark {
+    background-color: #343a40;
+    border-color: #343a40;
+}
+
+.table__link-button--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.table__icon-button {
+    padding-right: 0.5rem;
+}
+
+.table__badge-dot {
+    width: 16px;
+    height: 16px;
+    border: transparent solid 1px;
+    border-radius: 30px;
+    min-width: 2px;
+    background-color: #34b673;
+}
+
+.table__badge-dot--disconnected {
+    width: 16px;
+    height: 16px;
+    border: transparent solid 1px;
+    border-radius: 30px;
+    min-width: 2px;
+    background-color: #d92550;
+}
+
+.table__status-message {
+    color: #0d3822;
+    font-weight: 600;
+    padding-left: 0.5rem;
 }

@@ -2,63 +2,41 @@
     <table class="table">
         <thead class="table__head">
             <tr>
-                <th class="table__cell">Nombre</th>
-                <th class="table__cell">Usuario</th>
-                <th class="table__cell">Dominio/Ip</th>
-                <th class="table__cell">Tipo</th>
-                <th class="table__cell">Status</th>
-                <th class="table__cell">Acciones</th>
+                <th class="table__cell-head">Nombre</th>
+                <th class="table__cell-head">Usuario</th>
+                <th class="table__cell-head">Dominio/Ip</th>
+                <th class="table__cell-head">Puerto</th>
+                <th class="table__cell-head">Tipo</th>
+                <th class="table__cell-head">Status</th>
+                <th class="table__cell-head">Acciones</th>
             </tr>
         </thead>
         <tbody class="table__body">
+            {% for connection in this.connections %}
             <tr>
-                <td>Alfreds Futterkiste</td>
-                <td>Maria Anders</td>
-                <td>Germany</td>
-                <td>Alfreds Futterkiste</td>
-                <td>Maria Anders</td>
-                <td>Germany</td>
+                <td class="table__cell">{{ connection.database }}</td>
+                <td class="table__cell">{{ connection.user }}</td>
+                <td class="table__cell">{{ connection.address }}</td>
+                <td class="table__cell">{{ connection.exposedPort }}</td>
+                <td class="table__cell">{{ connection.type }}</td>
+                <td class="table__cell table__cell-status">
+                    {% if connection.status == false %}
+                        <div class="table__status">
+                            <div class="table__badge-dot table__badge-dot--disconnected"></div>
+                            <span class="table__status-message">{{ connection.message }}</span>
+                            {# <a class="table__link-button table__link-button--dark" href="https://www.w3schools.com">Reconectar</a> #}
+                        </div>
+                    {% else %}
+                        <div class="table__status">
+                            <div class="table__badge-dot"></div>
+                            <span class="table__status-message">Conectado</span>
+                            {# <a class="table__link-button table__link-button--dark table__link-button--disabled" href="https://www.w3schools.com">Reconectar</a> #}
+                        </div>
+                    {% endif %}
+                </td>
+                <td class="table__cell"><a class="table__link-button" href="{{ path('database_post_edit', {id: connection.type}) }}"><i class="fa-solid fa-pen table__icon-button"></i>Editar</a></td>
             </tr>
-            <tr>
-                <td>Centro comercial Moctezuma</td>
-                <td>Francisco Chang</td>
-                <td>Mexico</td>
-                <td>Centro comercial Moctezuma</td>
-                <td>Francisco Chang</td>
-                <td>Mexico</td>
-            </tr>
-            <tr>
-                <td >Centro comercial Moctezuma</td>
-                <td>Francisco Chang</td>
-                <td>Mexico</td>
-                <td>Centro comercial Moctezuma</td>
-                <td>Francisco Chang</td>
-                <td>Mexico</td>
-            </tr>
-            <tr>
-                <td>Centro comercial Moctezuma</td>
-                <td>Francisco Chang</td>
-                <td>Mexico</td>
-                <td>Centro comercial Moctezuma</td>
-                <td>Francisco Chang</td>
-                <td>Mexico</td>
-            </tr>
-            <tr>
-                <td>Centro comercial Moctezuma</td>
-                <td>Francisco Chang</td>
-                <td>Mexico</td>
-                <td>Centro comercial Moctezuma</td>
-                <td>Francisco Chang</td>
-                <td>Mexico</td>
-            </tr>
-            <tr>
-                <td>Centro comercial Moctezuma</td>
-                <td>Francisco Chang</td>
-                <td>Mexico</td>
-                <td>Centro comercial Moctezuma</td>
-                <td>Francisco Chang</td>
-                <td>Mexico</td>
-            </tr>
+            {% endfor %}
         </tbody>
     </table>
 </div>
