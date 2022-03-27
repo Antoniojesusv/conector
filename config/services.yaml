@@ -5,6 +5,22 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
 
+    mysql.user: '%env(MYSQL_USER)%'
+    mysql.password: '%env(MYSQL_PASSWORD)%'
+    mysql.address: '%env(MYSQL_ADDRESS)%'
+    mysql.database: '%env(MYSQL_DATABASE)%'
+    mysql.exposed.port: '%env(MYSQL_EXPOSED_PORT)%'
+    mysql.dsn: '%env(MYSQL_DSN)%'
+
+    sql.user: '%env(SQL_SERVER_USER)%'
+    sql.password: '%env(SA_PASSWORD)%'
+    sql.address: '%env(SQL_SERVER_ADDRESS)%'
+    sql.database: '%env(SQL_SERVER_DATABASE)%'
+    sql.exposed.port: '%env(SQL_SERVER_EXPOSED_PORT)%'
+    sql.dsn: '%env(SQL_DSN)%'
+
+    env.file: "%kernel.project_dir%/.env"
+
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -18,6 +34,7 @@ services:
         exclude:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
+            - '../src/**/Entities/'
             - '../src/Kernel.php'
 
     # add more service definitions when explicit configuration is needed
