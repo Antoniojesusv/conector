@@ -19,6 +19,9 @@ parameters:
     sql.exposed.port: '%env(SQL_SERVER_EXPOSED_PORT)%'
     sql.dsn: '%env(SQL_DSN)%'
 
+    sql.server: '%env(SQL_SERVER)%'
+    sql.microsoft.dsn: '%env(SQL_MICROSOFT_USER_DSN)%'
+
     env.file: "%kernel.project_dir%/.env"
 
 services:
