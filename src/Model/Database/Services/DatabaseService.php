@@ -2,6 +2,7 @@
 
 namespace App\Model\Database\Services;
 
+use App\Common\Repository;
 use App\DbConnectors\MysqlPdoConnector;
 use App\DbConnectors\SqlServerPdoConnector;
 use App\Model\Database\Entities\ConnectionEntity;
@@ -11,6 +12,7 @@ class DatabaseService
 {
     private SqlServerPdoConnector $sqlPdoConnector;
     private MysqlPdoConnector $mysqlPdoConnector;
+    private Repository $connectionRepository;
     private ?ConnectionEntity $sqlCe = null;
     private ?ConnectionEntity $mysqlCe = null;
     private array $ceList = [];
@@ -18,10 +20,12 @@ class DatabaseService
     public function __construct(
         SqlServerPdoConnector $sqlPdoConnector,
         MysqlPdoConnector $mysqlPdoConnector,
+        Repository $connectionRepository,
         ContainerBagInterface $params
     ) {
         $this->sqlPdoConnector = $sqlPdoConnector;
         $this->mysqlPdoConnector = $mysqlPdoConnector;
+        $this->connectionRepository = $connectionRepository;
         $this->params = $params;
     }
 
@@ -113,72 +117,11 @@ class DatabaseService
 
     public function persist(ConnectionEntity $connectionEntity): void
     {
-        $envFilePath = $this->params->get('env.file');
-        $envFile = file_get_contents($envFilePath);
-
-        if ($connectionEntity->getType() === 'sqlServer') {
-            $envFile = $this->sqlServerModify($envFile, $connectionEntity);
-        } else {
-            $envFile = $this->mysqlServerModify($envFile, $connectionEntity);
-        }
-
-        file_put_contents($envFilePath, $envFile);
+        $this->connectionRepository->save($connectionEntity);
     }
 
     public function reconnect(): void
     {
         $this->sqlPdoConnector->reconnect();
-    }
-
-    private function sqlServerModify(string $envFile, ConnectionEntity $connectionEntity): string
-    {
-        $patterns = [
-            '/SQL_SERVER_USER=.*/',
-            '/SA_PASSWORD=.*/',
-            '/SQL_SERVER_ADDRESS=.*/',
-            '/SQL_SERVER_DATABASE=.*/',
-            '/SQL_SERVER_EXPOSED_PORT=.*/',
-        ];
-
-        $user = $connectionEntity->getUser();
-        $password = $connectionEntity->getPassword();
-        $address = $connectionEntity->getAddress();
-        $database = $connectionEntity->getDatabase();
-        $exposedPort = $connectionEntity->getExposedPort();
-
-        $replacements = [];
-        $replacements[0] = "SQL_SERVER_USER=$user";
-        $replacements[1] = "SA_PASSWORD=\"$password\"";
-        $replacements[2] = "SQL_SERVER_ADDRESS=\"$address\"";
-        $replacements[3] = "SQL_SERVER_DATABASE=\"$database\"";
-        $replacements[4] = "SQL_SERVER_EXPOSED_PORT=$exposedPort";
-
-        return preg_replace($patterns, $replacements, $envFile);
-    }
-
-    private function mysqlServerModify(string $envFile, ConnectionEntity $connectionEntity): string
-    {
-        $patterns = [
-            '/MYSQL_USER=.*/',
-            '/MYSQL_PASSWORD=.*/',
-            '/MYSQL_ADDRESS=.*/',
-            '/MYSQL_DATABASE=.*/',
-            '/MYSQL_EXPOSED_PORT=.*/',
-        ];
-
-        $user = $connectionEntity->getUser();
-        $password = $connectionEntity->getPassword();
-        $address = $connectionEntity->getAddress();
-        $database = $connectionEntity->getDatabase();
-        $exposedPort = $connectionEntity->getExposedPort();
-
-        $replacements = [];
-        $replacements[0] = "MYSQL_USER=$user";
-        $replacements[1] = "MYSQL_PASSWORD=\"$password\"";
-        $replacements[2] = "MYSQL_ADDRESS=\"$address\"";
-        $replacements[3] = "MYSQL_DATABASE=\"$database\"";
-        $replacements[4] = "MYSQL_EXPOSED_PORT=$exposedPort";
-
-        return preg_replace($patterns, $replacements, $envFile);
     }
 }
