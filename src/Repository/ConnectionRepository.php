@@ -5,7 +5,8 @@ namespace App\Repository;
 use App\DbConnectors\MysqlPdoConnector;
 use App\DbConnectors\SqlServerPdoConnector;
 use App\Model\Common\Repository;
-use App\Model\Database\Entities\ConnectionEntity;
+use App\Model\Database\ConnectionEntity;
+use FTP\Connection;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
 class ConnectionRepository extends Repository
@@ -48,6 +49,14 @@ class ConnectionRepository extends Repository
 
         file_put_contents($envFilePath, $envFile);
     }
+
+    // public function getByType(string $type): ConnectionEntity
+    // {
+    //     $this->buildSqlCe();
+    //     $sqlServerPassword = $this->params->get('sql.password');
+    //     $this->sqlCe->setPassword($sqlServerPassword);
+    //     return $this->sqlCe;
+    // }
 
     private function replaceSqlServerEnviroment(string $envFile, ConnectionEntity $connectionEntity): string
     {

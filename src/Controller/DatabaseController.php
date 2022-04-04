@@ -2,9 +2,8 @@
 
 namespace App\Controller;
 
-use App\Form\Type\ConnectionType;
-use App\Model\Database\Entities\ConnectionEntity;
-use App\Model\Database\Services\DatabaseService;
+use App\Form\ConnectionType;
+use App\Model\Database\DatabaseService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,9 +25,6 @@ class DatabaseController extends AbstractController
      */
     public function edit(Request $request, string $id, DatabaseService $databaseService): Response
     {
-        // showing off how you could actually avoid creating the Form object on GET
-        // $form = null;
-
         $connectionEntity = $databaseService->getSqlCe();
 
         if ($id === 'mysqlServer') {
@@ -47,7 +43,6 @@ class DatabaseController extends AbstractController
         }
 
         return $this->renderForm('database/edit.html.twig', [
-            'connectionEntity' => $connectionEntity,
             'form' => $form,
         ]);
     }

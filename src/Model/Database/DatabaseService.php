@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Model\Database\Services;
+namespace App\Model\Database;
 
 use App\DbConnectors\MysqlPdoConnector;
 use App\DbConnectors\SqlServerPdoConnector;
 use App\Model\Common\Repository;
-use App\Model\Database\Entities\ConnectionEntity;
+use App\Model\Database\ConnectionEntity;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
 class DatabaseService

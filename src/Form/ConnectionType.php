@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Form\Type;
+namespace App\Form;
 
-use App\Model\Database\Entities\ConnectionEntity;
+use App\Model\Database\ConnectionEntity;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
