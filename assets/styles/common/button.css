@@ -1,0 +1,32 @@
+.button {
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid transparent;
+    background-color: #34b673;
+    border-color: #34b673;
+    color: white;
+}
+
+.button:hover {
+    color: #fff;
+    background-color: #31a66a;
+    border-color: #2e9d64;
+}
+
+.button--dark {
+    background-color: #343a40;
+    border-color: #343a40;
+}
+
+.button--dark:hover {
+    color: #fff;
+    background-color: #23272b;
+    border-color: #1d2124;
+}
+
+.button--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
