@@ -4,28 +4,28 @@ namespace App\Model\Database\Entities;
 
 use Exception;
 
-abstract class ConnectionEntity
+abstract class ConnectionBaseEntity
 {
     const TYPES = ['sqlServer', 'mysqlServer'];
 
-    private string $user;
-    private string $password;
-    private string $address;
-    private string $type;
-    private bool $status = false;
-    private string $message = '';
+    protected string $user;
+    protected string $password;
+    protected string $database;
+    protected string $type;
+    protected bool $status = false;
+    protected string $message = '';
 
     public function __construct(
         string $user,
         string $password,
-        string $address,
+        string $database,
         string $type,
-        ?bool $status,
-        ?string $message
+        bool $status,
+        string $message
     ) {
         $this->setUser($user);
         $this->setPassword($password);
-        $this->setAddress($address);
+        $this->setDatabase($database);
         $this->setType($type);
         $this->status = $status;
         $this->message = $message;
@@ -59,18 +59,18 @@ abstract class ConnectionEntity
         $this->password = $password;
     }
 
-    public function getAddress(): string
+    public function getDatabase(): string
     {
-        return $this->address;
+        return $this->database;
     }
 
-    public function setAddress(string $address): void
+    public function setDatabase(string $database): void
     {
-        if (empty($address)) {
-            throw new Exception('The address cannot be empty');
+        if (empty($database)) {
+            throw new Exception('The database cannot be empty');
         }
 
-        $this->address = $address;
+        $this->database = $database;
     }
 
     public function getType(): string
@@ -96,8 +96,18 @@ abstract class ConnectionEntity
         return $this->status;
     }
 
+    public function setStatus(bool $status): void
+    {
+        $this->status = $status;
+    }
+
     public function getMessage(): string
     {
         return $this->message;
+    }
+
+    public function setMessage(string $message): void
+    {
+        $this->message = $message;
     }
 }

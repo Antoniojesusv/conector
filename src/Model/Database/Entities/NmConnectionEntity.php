@@ -4,9 +4,9 @@ namespace App\Model\Database\Entities;
 
 use Exception;
 
-class NormalConnectionEntity extends ConnectionEntity
+class NmConnectionEntity extends ConnectionBaseEntity
 {
-    private string $database;
+    private string $address;
     private int $exposedPort;
 
     public function __construct(
@@ -16,34 +16,33 @@ class NormalConnectionEntity extends ConnectionEntity
         string $database,
         int $exposedPort,
         string $type,
-        ?bool $status,
-        ?string $message
+        bool $status,
+        string $message
     ) {
         parent::__construct(
             $user,
             $password,
-            $address,
             $database,
             $type,
             $status,
             $message
         );
-        $this->setDatabase($database);
+        $this->setAddress($address);
         $this->setExposedPort($exposedPort);
     }
 
-    public function getDatabase(): string
+    public function getAddress(): string
     {
-        return $this->database;
+        return $this->address;
     }
 
-    public function setDatabase(string $database): void
+    public function setAddress(string $address): void
     {
-        if (empty($database)) {
-            throw new Exception('The database cannot be empty');
+        if (empty($address)) {
+            throw new Exception('The address cannot be empty');
         }
 
-        $this->database = $database;
+        $this->address = $address;
     }
 
     public function getExposedPort(): string
