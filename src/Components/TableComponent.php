@@ -17,6 +17,6 @@ class TableComponent
 
     public function getConnections(): array
     {
-        return $this->databaseService->getConnections();
+        return $this->databaseService->listConnections();
     }
 }
