@@ -18,8 +18,9 @@ parameters:
     sql.database: '%env(SQL_SERVER_DATABASE)%'
     sql.exposed.port: '%env(SQL_SERVER_EXPOSED_PORT)%'
     sql.dsn: '%env(SQL_DSN)%'
+    sql.authentication.method: '%env(SQL_SERVER_AUTHENTICATION_METHOD)%'
 
-    sql.server: '%env(SQL_SERVER)%'
+    sql.server: '%env(SERVER_SQL)%'
     sql.microsoft.dsn: '%env(SQL_MICROSOFT_USER_DSN)%'
 
     env.file: "%kernel.project_dir%/.env"
@@ -45,4 +46,20 @@ services:
 
     App\Model\Database\DatabaseService:
         arguments:
-           $connectionRepository: '@App\Repository\ConnectionRepository' 
+           $sqlPdoFactory: '@App\DbConnectors\Factories\SqlServerPdoFactory'
+           $mysqlPdoFactory: '@App\DbConnectors\Factories\MysqlPdoFactory'
+           $nmConnectionRepository: '@App\Repository\NmConnectionRepository'
+           $uWconnectionRepository: '@App\Repository\UwConnectionRepository'
+           $nmConnectionFactory: '@App\Model\Database\Factories\NmConnectionFactory'
+           $uWConnectionFactory: '@App\Model\Database\Factories\UwConnectionFactory'
+    
+    App\Repository\NmConnectionRepository:
+        arguments:
+           $sqlPdoFactory: '@App\DbConnectors\Factories\SqlServerPdoFactory'
+           $mysqlPdoFactory: '@App\DbConnectors\Factories\MysqlPdoFactory'
+           $nmConnectionFactory: '@App\Model\Database\Factories\NmConnectionFactory'
+
+    App\Repository\UwConnectionRepository:
+        arguments:
+           $sqlPdoFactory: '@App\DbConnectors\Factories\SqlServerPdoFactory'
+           $uWConnectionFactory: '@App\Model\Database\Factories\UwConnectionFactory'
