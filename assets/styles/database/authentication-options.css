@@ -1,0 +1,69 @@
+.authentication-options {
+    display: flex;
+    justify-content: space-evenly;
+    padding: 2rem 0rem;
+}
+
+.authentication-options__card {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.authentication-options__content {
+    color: white;
+    padding: 1em;
+    max-width: 50%;
+    position: relative;
+    z-index: 2;
+}
+
+.authentication-options__content--dark {
+    color: black;
+}
+
+.authentication-options__blob {
+    position: absolute;
+    right: -80px;
+    top: -80px;
+    width: 360px;
+    height: 360px;
+    background: #00e600;
+    border-radius: 320px;
+    opacity: 0.8;
+    transition: 0.2s ease;
+}
+
+.authentication-options__blob::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 240px;
+    height: 240px;
+    background: #00b300;
+    border-radius: 320px;
+    opacity: 0.9;
+    transition: 0.25s ease;
+}
+
+.authentication-options__blob::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 160px;
+    height: 160px;
+    background: green;
+    border-radius: 320px;
+    transition: 0.27s ease;
+}
+
+.authentication-options__link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+}

@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Opciones de autenticacacion{% endblock %}
+
+{% block main %}
+    <h1>{% block main_title %}Opciones de autenticación{% endblock %}</h1>
+
+    <div class="authentication-options">
+        <div class="card authentication-options__card card--dark">
+            <div class="authentication-options__blob"></div>
+            <div class="authentication-options__content">
+                <h1>Usuario de windows</h1>
+                <p>Esta conexión solo requiere el nombre de la maquina windows.</p>
+            </div>
+            <a class="authentication-options__link" href="{{ path('database_post_edit', {id: 'uwSqlServer'}) }}"></a>
+        </div>
+        <div class="card authentication-options__card">
+            <div class="authentication-options__blob"></div>
+            <div class="authentication-options__content authentication-options__content--dark">
+                <h1>Autenticación Normal</h1>
+                <p>Esta conexión es completa y requiere introdudir todas las credenciales.</p>
+            </div>
+            <a class="authentication-options__link" href="{{ path('database_post_edit', {id: 'nmSqlServer'}) }}"></a>
+        </div>
+    </div>
+{% endblock %}
