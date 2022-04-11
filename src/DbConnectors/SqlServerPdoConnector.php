@@ -6,18 +6,14 @@ use Exception;
 use PDO;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
-class SqlServerPdoConnector
+class SqlServerPdoConnector extends PdoConnector
 {
-    private ContainerBagInterface $params;
-    private ?PDO $connection = null;
-    private string $message = '';
-
-    public function __construct(ContainerBagInterface $params)
+    protected function __construct(ContainerBagInterface $params)
     {
         $this->params = $params;
     }
 
-    public function connect()
+    public function connect(): void
     {
         $user = $this->params->get('sql.user');
         $password = $this->params->get('sql.password');
@@ -31,26 +27,5 @@ class SqlServerPdoConnector
             $this->message = $e->getMessage();
             $this->connection = null;
         }
-    }
-
-    public function getConnection()
-    {
-        return $this->connection;
-    }
-
-    public function reconnect(): void
-    {
-        $this->connection = null;
-        $this->connect();
-    }
-
-    public function hasConnection(): bool
-    {
-        return !is_null($this->connection);
-    }
-
-    public function getMessage(): string
-    {
-        return $this->message;
     }
 }
