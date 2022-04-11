@@ -2,12 +2,12 @@
 
 namespace App\Model\Database\Factories;
 
-use App\Model\Database\Entities\ConnectionEntity;
-use App\Model\Database\Entities\NormalConnectionEntity;
+use App\Model\Database\Entities\ConnectionBaseEntity;
+use App\Model\Database\Entities\NmConnectionEntity;
 
-class NormalConnectionFactory extends ConnectionFactory
+class NmConnectionFactory implements ConnectionFactoryI
 {
-    public function create($params): ConnectionEntity
+    public function create($params): ConnectionBaseEntity
     {
         [
             'user' => $user,
@@ -15,17 +15,18 @@ class NormalConnectionFactory extends ConnectionFactory
             'address' => $address,
             'database' => $database,
             'exposedPort' => $exposedPort,
+            'type' => $type,
             'status' => $status,
             'message' => $message
         ] = $params;
 
-        $connectionEntity = new NormalConnectionEntity(
+        $connectionEntity = new NmConnectionEntity(
             $user,
             $password,
             $address,
             $database,
             $exposedPort,
-            'mysqlServer',
+            $type,
             $status,
             $message
         );
