@@ -2,126 +2,116 @@
 
 namespace App\Model\Database;
 
-use App\DbConnectors\MysqlPdoConnector;
-use App\DbConnectors\SqlServerPdoConnector;
-use App\Model\Common\Repository;
-use App\Model\Database\ConnectionEntity;
+use App\DbConnectors\Factories\PdoFactoryI;
+use App\Model\Database\Entities\ConnectionBaseEntity;
+use App\Model\Database\Factories\ConnectionFactoryI;
+use App\Model\Database\Repositories\NmConnectionRepositoryI;
+use App\Model\Database\Repositories\UwConnectionRepositoryI;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
 class DatabaseService
 {
-    private SqlServerPdoConnector $sqlPdoConnector;
-    private MysqlPdoConnector $mysqlPdoConnector;
-    private Repository $connectionRepository;
-    private ?ConnectionEntity $sqlCe = null;
-    private ?ConnectionEntity $mysqlCe = null;
-    private array $ceList = [];
+    private PdoFactoryI $sqlPdoFactory;
+    private PdoFactoryI $mysqlPdoFactory;
+    private NmConnectionRepositoryI $nmConnectionRepository;
+    private UwConnectionRepositoryI $uWconnectionRepository;
+    private ConnectionFactoryI $nmConnectionFactory;
+    private ConnectionFactoryI $uWConnectionFactory;
 
     public function __construct(
-        SqlServerPdoConnector $sqlPdoConnector,
-        MysqlPdoConnector $mysqlPdoConnector,
-        Repository $connectionRepository,
+        PdoFactoryI $sqlPdoFactory,
+        PdoFactoryI $mysqlPdoFactory,
+        NmConnectionRepositoryI $nmConnectionRepository,
+        UwConnectionRepositoryI $uWconnectionRepository,
+        ConnectionFactoryI $nmConnectionFactory,
+        ConnectionFactoryI $uWConnectionFactory,
         ContainerBagInterface $params
     ) {
-        $this->sqlPdoConnector = $sqlPdoConnector;
-        $this->mysqlPdoConnector = $mysqlPdoConnector;
-        $this->connectionRepository = $connectionRepository;
+        $this->sqlPdoFactory = $sqlPdoFactory;
+        $this->mysqlPdoFactory = $mysqlPdoFactory;
+        $this->nmConnectionRepository = $nmConnectionRepository;
+        $this->uWconnectionRepository = $uWconnectionRepository;
+        $this->nmConnectionFactory = $nmConnectionFactory;
+        $this->uWConnectionFactory = $uWConnectionFactory;
         $this->params = $params;
     }
 
-    public function getConnections(): array
+    public function listConnections(): array
     {
-        $this->sqlPdoConnector->connect();
-        $this->mysqlPdoConnector->connect();
-        $this->buildConnectionEntity();
-        return $this->ceList;
-    }
+        $authenticationMethod = $this->params->get("sql.authentication.method");
 
-    public function getSqlCe(): ConnectionEntity
-    {
-        $this->buildSqlCe();
-        $sqlServerPassword = $this->params->get('sql.password');
-        $this->sqlCe->setPassword($sqlServerPassword);
-        return $this->sqlCe;
-    }
+        $nmMysqlConnectionEntity = $this->nmConnectionRepository->getByType('mysqlServer');
+        $mysqlPdoConnector = $this->mysqlPdoFactory->create();
+        $mysqlPdoConnector->hasConnection() ? $mysqlPdoConnector->reconnect() : $mysqlPdoConnector->connect();
 
-    public function getMysqlCe(): ConnectionEntity
-    {
-        $this->buildMysqlCe();
-        $mysqlPassword = $this->params->get('mysql.password');
-        $this->mysqlCe->setPassword($mysqlPassword);
-        return $this->mysqlCe;
-    }
-
-    private function buildConnectionEntity(): void
-    {
-        $this->buildSqlCe();
-        $this->buildMysqlCe();
-        $this->ceList[0] = $this->sqlCe;
-        $this->ceList[1] = $this->mysqlCe;
-    }
-
-    private function buildSqlCe(): void
-    {
-        $sqlServerUser = $this->params->get('sql.user');
-        $sqlServerAddress = $this->params->get('sql.address');
-        $sqlServerDatabase = $this->params->get('sql.database');
-        $sqlServerExposedPort = $this->params->get('sql.exposed.port');
-        $sqlServerStatus = $this->sqlPdoConnector->hasConnection();
-        $message = '';
-
-        if (!$sqlServerStatus) {
-            $message = $this->sqlPdoConnector->getMessage();
+        if ($mysqlPdoConnector->hasConnection()) {
+            $this->toogleStatus($nmMysqlConnectionEntity);
         }
 
-        $sqlCe = new ConnectionEntity(
-            $sqlServerUser,
-            null,
-            $sqlServerAddress,
-            $sqlServerDatabase,
-            $sqlServerExposedPort,
-            'sqlServer',
-            $sqlServerStatus,
-            $message
-        );
+        $message = $mysqlPdoConnector->getMessage();
+        $nmMysqlConnectionEntity->setMessage($message);
 
-        $this->sqlCe = $sqlCe;
-    }
+        if ($authenticationMethod === 'nm') {
+            $nmSqlConnectionEntity = $this->nmConnectionRepository->getByType('sqlServer');
+            $sqlServerPdoConnector = $this->sqlPdoFactory->create('sqlServer');
+            $sqlServerPdoConnector->hasConnection() ? $sqlServerPdoConnector->reconnect() : $sqlServerPdoConnector->connect();
 
-    private function buildMysqlCe(): void
-    {
-        $mysqlUser = $this->params->get('mysql.user');
-        $mysqlAddress = $this->params->get('mysql.address');
-        $mysqlDatabase = $this->params->get('mysql.database');
-        $mysqlExposedPort = $this->params->get('mysql.exposed.port');
-        $mysqlStatus = $this->mysqlPdoConnector->hasConnection();
-        $message = '';
+            if ($sqlServerPdoConnector->hasConnection()) {
+                $this->toogleStatus($nmSqlConnectionEntity);
+            }
 
-        if (!$mysqlStatus) {
-            $message = $this->mysqlPdoConnector->getMessage();
+            $message = $sqlServerPdoConnector->getMessage();
+            $nmSqlConnectionEntity->setMessage($message);
+
+            return [
+                $nmSqlConnectionEntity,
+                $nmMysqlConnectionEntity
+            ];
         }
 
-        $mysqlCe = new ConnectionEntity(
-            $mysqlUser,
-            null,
-            $mysqlAddress,
-            $mysqlDatabase,
-            $mysqlExposedPort,
-            'mysqlServer',
-            $mysqlStatus,
-            $message
-        );
+        $uwSqlConnectionEntity = $this->uWconnectionRepository->get();
+        $uwSqlServerPdoConnector = $this->sqlPdoFactory->create();
+        $uwSqlServerPdoConnector->hasConnection() ? $uwSqlServerPdoConnector->reconnect() : $uwSqlServerPdoConnector->connect();
 
-        $this->mysqlCe = $mysqlCe;
+        if ($uwSqlServerPdoConnector->hasConnection()) {
+            $this->toogleStatus($uwSqlConnectionEntity);
+        }
+
+        $message = $uwSqlServerPdoConnector->getMessage();
+        $uwSqlConnectionEntity->setMessage($message);
+
+        return [
+            $uwSqlConnectionEntity,
+            $nmMysqlConnectionEntity
+        ];
     }
 
-    public function persist(ConnectionEntity $connectionEntity): void
+    public function persist(array $data, string $authentication): void
     {
-        $this->connectionRepository->save($connectionEntity);
+        $data['status'] = false;
+        $data['message'] = '';
+
+        if ($authentication === 'uwSqlServer') {
+            $connection = $this->uWConnectionFactory->create($data);
+            $this->uWconnectionRepository->save($connection);
+        }
+
+        if ($authentication === 'nmSqlServer') {
+            $data['type'] = 'sqlServer';
+            $connection = $this->nmConnectionFactory->create($data);
+            $this->nmConnectionRepository->save($connection);
+        }
+
+        if ($authentication === 'mysqlServer') {
+            $data['type'] = 'mysqlServer';
+            $connection = $this->nmConnectionFactory->create($data);
+            $this->nmConnectionRepository->save($connection);
+        }
     }
 
-    public function reconnect(): void
+    private function toogleStatus(ConnectionBaseEntity $connection): void
     {
-        $this->sqlPdoConnector->reconnect();
+        $status = !$connection->getStatus();
+        $connection->setStatus($status);
     }
 }
