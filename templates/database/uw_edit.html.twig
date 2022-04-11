@@ -1,0 +1,43 @@
+{% extends 'main_layout.html.twig' %}
+
+{% block title %}Editar base de datos{% endblock %}
+
+{% block main_title %}Editar Base de datos{% endblock %}
+
+{% block main_content %}
+   {{ form_start(form) }}
+
+        <div class="form__group">
+            {{ form_label(form.database, null, {'label_attr': {'class': 'form__label'}}) }}
+            <div>
+                {% if form.database.vars.valid == false %}
+                    {{ form_widget(form.database, {'attr': {'class': 'form__control form__control--invalid'}}) }}
+                {% else %}
+                    {{ form_widget(form.database, {'attr': {'class': 'form__control'}}) }}
+                {% endif %}
+                <div class="form__error">
+                    {{form.database.vars.errors}}
+                </div>
+            </div>
+        </div>
+   
+        <div class="form__group">
+            {{ form_label(form.server, null, {'label_attr': {'class': 'form__label'}}) }}
+            <div>
+                {% if form.server.vars.valid == false %}
+                    {{ form_widget(form.server, {'attr': {'class': 'form__control form__control--invalid'}}) }}
+                {% else %}
+                    {{ form_widget(form.server, {'attr': {'class': 'form__control'}}) }}
+                {% endif %}
+                <div class="form__error">
+                    {{form.server.vars.errors}}
+                </div>
+            </div>
+        </div>
+
+        <div class="form__button-group">
+            {{ form_row(form.edit, { 'label': 'Editar', 'attr': { 'class': 'button form__button-group-item'} }) }}
+            <a class="button button--dark form__button-group-item" href="{{ path('database_index') }}">Volver</a>
+        </div>
+   {{ form_end(form) }}
+{% endblock %}

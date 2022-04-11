@@ -2,7 +2,7 @@
 
 namespace App\Components;
 
-use App\Model\Database\Services\DatabaseService;
+use App\Model\Database\DatabaseService;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent('table')]
@@ -17,6 +17,6 @@ class TableComponent
 
     public function getConnections(): array
     {
-        return $this->databaseService->getConnections();
+        return $this->databaseService->listConnections();
     }
 }
