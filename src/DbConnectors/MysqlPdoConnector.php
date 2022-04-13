@@ -21,8 +21,10 @@ class MysqlPdoConnector extends PdoConnector
         $dsn = rtrim($dsn, "\;");
 
         try {
-            $this->connection = new PDO($dsn, $user, $password);
-            $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->connection = new PDO($dsn, $user, $password, [
+                PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_TIMEOUT, 2
+            ]);
         } catch (Exception $e) {
             $this->message = $e->getMessage();
             $this->connection = null;
