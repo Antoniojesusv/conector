@@ -11,7 +11,7 @@ abstract class PdoConnector
     protected ?PDO $connection = null;
     protected string $message = '';
     protected static $instances = [];
-
+    
     abstract public function connect(): void;
 
     protected function __construct(ContainerBagInterface $params)
