@@ -6,18 +6,14 @@ use Exception;
 use PDO;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
-class MysqlPdoConnector
+class MysqlPdoConnector extends PdoConnector
 {
-    private ContainerBagInterface $params;
-    private ?PDO $connection = null;
-    private string $message = '';
-
-    public function __construct(ContainerBagInterface $params)
+    protected function __construct(ContainerBagInterface $params)
     {
         $this->params = $params;
     }
 
-    public function connect()
+    public function connect(): void
     {
         $user = $this->params->get('mysql.user');
         $password = $this->params->get('mysql.password');
@@ -25,32 +21,13 @@ class MysqlPdoConnector
         $dsn = rtrim($dsn, "\;");
 
         try {
-            $this->connection = new PDO($dsn, $user, $password);
-            $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->connection = new PDO($dsn, $user, $password, [
+                PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_TIMEOUT, 2
+            ]);
         } catch (Exception $e) {
             $this->message = $e->getMessage();
             $this->connection = null;
         }
-    }
-
-    public function getConnection()
-    {
-        return $this->connection;
-    }
-
-    public function reconnect(): void
-    {
-        $this->connection = null;
-        $this->connect();
-    }
-
-    public function hasConnection(): bool
-    {
-        return !is_null($this->connection);
-    }
-
-    public function getMessage(): string
-    {
-        return $this->message;
     }
 }

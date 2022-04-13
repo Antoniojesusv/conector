@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model\Synchronise\Services;
+namespace App\Model\Synchronise;
 
 class SynchroniseService
 {

@@ -29,27 +29,6 @@
     align-items: center;
 }
 
-.table__link-button {
-    text-decoration: none;
-    cursor: pointer;
-    padding: 0.5rem 1rem;
-    border-radius: 0.25rem;
-    border: 1px solid transparent;
-    background-color: #34b673;
-    border-color: #34b673;
-    color: white;
-}
-
-.table__link-button--dark {
-    background-color: #343a40;
-    border-color: #343a40;
-}
-
-.table__link-button--disabled {
-    opacity: 0.5;
-    pointer-events: none;
-}
-
 .table__icon-button {
     padding-right: 0.5rem;
 }
