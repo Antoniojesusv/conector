@@ -1,0 +1,37 @@
+.shop-card__logo-container {
+    margin: 0;
+    width: 2rem;
+}
+
+.shop-card__logo {
+    width: 100%;
+}
+
+.shop-card__container-name {
+    padding: 0rem 0.5rem;
+}
+
+.shop-card__name {
+    display: flex;
+    align-items: center;
+    font-weight: 400;
+    font-size: 1.5rem;
+}
+
+.shop-card__list{
+    display: flex;
+    flex-direction: column;
+}
+
+.shop-card__item {
+    font-weight: bold;
+    color: #8e8d93;
+}
+
+.shop-card__item:first-child {
+    padding-bottom: 1rem;
+}
+
+.shop-card__item-value {
+    color: #3f6ad8
+}
