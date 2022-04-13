@@ -1,5 +1,29 @@
-{% extends 'main_layout.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Tiendas{% endblock %}
 
-{% block main_title %}Tiendas{% endblock %}
+{% block main %}
+    <h1>{% block main_title %}Tiendas{% endblock %}</h1>
+
+    <div class="composite-card">
+        <div class="composite-card__header">
+            <figure class="shop-card__logo-container">
+                <img class="shop-card__logo" src="{{ asset('images/Tiendas_Icon.png') }}" alt="Image could not be loaded">
+            </figure>
+            <div class="shop-card__container-name">
+                <span class"shop-card__name">{{ shop.name }}</span>
+            </div>
+        </div>
+
+        <div class="composite-card__body">
+            <div class="shop-card__list">
+                <span class="shop-card__item">Nombre: <b class="shop-card__item-value">{{ shop.name }}</b></span>
+                <span class="shop-card__item">Tarifa: <b class="shop-card__item-value">{{ shop.rate }}</b></span>
+            </div>
+        </div>
+
+        <div class="composite-card__footer">
+            <a class="button" href="{{ path('shop_post_edit') }}">Editar</a>
+        </div>
+    </div>
+{% endblock %}

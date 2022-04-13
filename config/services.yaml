@@ -23,6 +23,9 @@ parameters:
     sql.server: '%env(SERVER_SQL)%'
     sql.microsoft.dsn: '%env(SQL_MICROSOFT_USER_DSN)%'
 
+    shop.name: '%env(SHOP_NAME)%'
+    shop.rate: '%env(SHOP_RATE)%'
+
     env.file: "%kernel.project_dir%/.env"
 
 services:

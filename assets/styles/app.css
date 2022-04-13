@@ -21,3 +21,4 @@ body {
 @import "components/table.css";
 @import "common/form.css";
 @import "database/authentication-options.css";
+@import "shop/shop-card.css";

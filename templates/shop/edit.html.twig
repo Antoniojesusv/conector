@@ -1,0 +1,43 @@
+{% extends 'main_layout.html.twig' %}
+
+{% block title %}Editar tienda{% endblock %}
+
+{% block main_title %}Editar tienda{% endblock %}
+
+{% block main_content %}
+   {{ form_start(form) }}
+
+        <div class="form__group">
+            {{ form_label(form.name, null, {'label_attr': {'class': 'form__label'}}) }}
+            <div>
+                {% if form.name.vars.valid == false %}
+                    {{ form_widget(form.name, {'attr': {'class': 'form__control form__control--invalid'}}) }}
+                {% else %}
+                    {{ form_widget(form.name, {'attr': {'class': 'form__control'}}) }}
+                {% endif %}
+                <div class="form__error">
+                    {{form.name.vars.errors}}
+                </div>
+            </div>
+        </div>
+
+        <div class="form__group">
+            {{ form_label(form.rate, null, {'label_attr': {'class': 'form__label'}}) }}
+            <div>
+                {% if form.rate.vars.valid == false %}
+                    {{ form_widget(form.rate, {'attr': {'class': 'form__control form__control--invalid'}}) }}
+                {% else %}
+                    {{ form_widget(form.rate, {'attr': {'class': 'form__control'}}) }}
+                {% endif %}
+                <div class="form__error">
+                    {{form.rate.vars.errors}}
+                </div>
+            </div>
+        </div>
+
+        <div class="form__button-group">
+            {{ form_row(form.edit, { 'label': 'Editar', 'attr': { 'class': 'button form__button-group-item'} }) }}
+            <a class="button button--dark form__button-group-item" href="{{ path('shop_index') }}">Volver</a>
+        </div>
+   {{ form_end(form) }}
+{% endblock %}
