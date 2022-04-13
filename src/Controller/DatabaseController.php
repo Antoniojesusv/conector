@@ -59,12 +59,7 @@ class DatabaseController extends AbstractController
         }
 
         $form->handleRequest($request);
-
-        // if ($request->isMethod('POST')) {
-        // $form = $this->createForm(NmConnectionType::class, $connectionModel);
-        // $form->handleRequest($request);
-        // }
-
+        
         if ($form && $form->isSubmitted() && $form->isValid()) {
             $connectionModel = $form->getData();
             $data = $connectionModel->toArray();
