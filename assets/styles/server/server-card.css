@@ -1,0 +1,33 @@
+.server-card__logo-container {
+    margin: 0;
+    width: 2rem;
+}
+
+.server-card__logo {
+    width: 100%;
+}
+
+.server-card__container-name {
+    padding: 0rem 0.5rem;
+}
+
+.server-card__name {
+    display: flex;
+    align-items: center;
+    font-weight: 400;
+    font-size: 1.5rem;
+}
+
+.server-card__list{
+    display: flex;
+    flex-direction: column;
+}
+
+.server-card__item {
+    font-weight: bold;
+    color: #8e8d93;
+}
+
+.server-card__item-value {
+    color: #3f6ad8
+}

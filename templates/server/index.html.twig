@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Servidor{% endblock %}
+
+{% block main %}
+    <h1>{% block main_title %}Servidor{% endblock %}</h1>
+
+    <div class="composite-card">
+        <div class="composite-card__header">
+            <figure class="server-card__logo-container">
+                <img class="server-card__logo" src="{{ asset('images/Tiendas_Icon.png') }}" alt="Image could not be loaded">
+            </figure>
+            <div class="server-card__container-name">
+                <span class"server-card__name">Servidor Local</span>
+            </div>
+        </div>
+
+        <div class="composite-card__body">
+            <div class="server-card__list">
+                <span class="server-card__item">Carpeta de fotos eurowin: <b class="server-card__item-value">{{ server.photosPath }}</b></span>
+            </div>
+        </div>
+
+        <div class="composite-card__footer">
+            <a class="button" href="{{ path('server_post_edit') }}">Editar</a>
+        </div>
+    </div>
+{% endblock %}
