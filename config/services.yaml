@@ -25,6 +25,7 @@ parameters:
 
     shop.name: '%env(SHOP_NAME)%'
     shop.rate: '%env(SHOP_RATE)%'
+    server.photos.path: '%env(SERVER_PHOTOS_PATH)%'
 
     env.file: "%kernel.project_dir%/.env"
 
