@@ -26,6 +26,8 @@
 /.php-cs-fixer.cache
 /logs
 docker-entrypoint-*/
+Eurowin/*
+**/temporaryImages/*
 ###< Zip lambda service ###
 ###########< CONNECTOR ##############
 
