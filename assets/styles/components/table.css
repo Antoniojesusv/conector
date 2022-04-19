@@ -7,11 +7,25 @@
     overflow-x: auto;
 }
 
+.table-log__row:nth-of-type(odd) {
+    background-color: rgba(0,0,0,.03);
+}
+
 .table__cell {
     min-width: 200px;
     padding: 1rem 0rem;
     text-align: left;
     border-top: 1px solid #e9ecef;
+}
+
+.table-log_cell {
+    padding: 1rem;
+    min-width: 0px;
+}
+
+.table-log_image-cell {
+    display: flex;
+    justify-content: center;
 }
 
 .table__cell-status {

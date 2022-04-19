@@ -1,0 +1,11 @@
+<div {{ attributes }} data-poll class="progress-bar__parent-container">
+    <h2 class="progress-bar__title">Progreso de sincronización</h2>
+    <div class="progress-bar__container">
+        <div class="progress-bar" style="transform: translate({{currentPercentage}}%, 0px)">
+            {% if currentPercentage == 100 %}
+                <span class="progress-bar__text">Completado!</span>
+            {% endif %}
+        </div>
+    </div>
+    <span class="progress-bar__percentage">{{ currentPercentage }}%</span>
+</div>
