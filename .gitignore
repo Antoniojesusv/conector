@@ -20,11 +20,14 @@
 
 ###> Zip lambda service ###
 /.env.backup
+/.env.backup.server
 /tools/
 /.vscode/
 /.php-cs-fixer.cache
 /logs
 docker-entrypoint-*/
+Eurowin/*
+**/temporaryImages/*
 ###< Zip lambda service ###
 ###########< CONNECTOR ##############
 
