@@ -16,6 +16,15 @@
     box-shadow: 0 0.46875rem 2.1875rem rgb(4 9 20 / 3%), 0 0.9375rem 1.40625rem rgb(4 9 20 / 3%), 0 0.25rem 0.53125rem rgb(4 9 20 / 5%), 0 0.125rem 0.1875rem rgb(4 9 20 / 3%);
 }
 
+.synchronisation-composite-card {
+    display: flex;
+    padding: 0rem;
+    background-color: #fdfdfd;
+    border-radius: 0.25rem;
+    box-shadow: 0 0.46875rem 2.1875rem rgb(4 9 20 / 3%), 0 0.9375rem 1.40625rem rgb(4 9 20 / 3%), 0 0.25rem 0.53125rem rgb(4 9 20 / 5%), 0 0.125rem 0.1875rem rgb(4 9 20 / 3%);
+    max-height: 300px;
+}
+
 .composite-card__header {
     display: flex;
     align-items: center;
@@ -31,4 +40,24 @@
     display: flex;
     padding: 1rem 0rem 1rem 1rem;
     border-top: 1px solid rgba(26,54,126,.125);
+}
+
+.composite-card__information {
+    width: 100%;
+}
+
+.show-flex {
+    display: flex;
+}
+
+.show {
+    display: block;
+}
+
+.hide {
+    display: none;
+}
+
+.opacity-50 {
+    opacity: 0.5;
 }

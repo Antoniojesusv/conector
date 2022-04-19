@@ -20,6 +20,10 @@ body {
 @import "common/main.css";
 @import "components/table.css";
 @import "common/form.css";
+@import "common/badge.css";
 @import "database/authentication-options.css";
 @import "shop/shop-card.css";
 @import "server/server-card.css";
+@import "synchronisation/synchronisation.css";
+@import "components/live-log.css";
+@import "components/progress-bar.css";

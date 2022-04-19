@@ -1,0 +1,65 @@
+<div {{ attributes }} class="synchronisation-composite-card">
+    <div class="composite-card__information">
+        <div class="composite-card__header">
+            <i class="fa-solid fa-images synchronisation-icon"></i>
+            <div class="server-card__container-name">
+                <span class"server-card__name">Sincronizar imagenes</span>
+            </div>
+        </div>
+
+        <div class="composite-card__body">
+            <div class="server-card__list">
+                <span class="server-card__item synchronisation-card__folder">Carpeta de fotos eurowin: <b class="server-card__item-value">{{ imagesFolderPath }}</b></span>
+                {% if messageError is not empty %}
+                    <span class="server-card__item live-log__error-item">Error: <b class="server-card__item-value live-log__item-value-error">{{ messageError }}</b></span>
+                {% endif %}
+                {% if hide == false %}
+                    {{ component('progress_bar') }}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="composite-card__footer">
+            <button class="button" data-loading="addClass(opacity-50) addAttribute(disabled)" data-action="live#action" data-action-name="synchronise">Sincronizar</button>
+        </div>
+    </div>
+    {% if hide == false %}
+        <div class="live-log">
+            <div class="live-log__header">
+                <span class"live-log__title">Registro</span>
+                <div class="live-log__container-icon" data-action="live#action" data-action-name="synchronise">
+                    {# <button class="live-log__button" data-action="live#action" data-action-name="synchronise"><i class="fa-solid fa-xmark live-log__icon"></i></button> #}
+                </div>
+            </div>
+            <div class="live-log__body">
+                <table class="table table-log">
+                    <tbody class="table__body">
+                        {% if images is not empty %}
+                            {% for image in images %}
+                                <tr class="table-log__row">
+                                    <td class="table__cell table-log_cell table-log_image-cell">
+                                        <figure class="sidebar__logo-container">
+                                            <img class="sidebar__logo synchronisation-card__image" src={{image.temporaryImageFile}} alt="Image could not be loaded">
+                                        </figure>
+                                    </td>
+                                    <td class="table__cell table-log_cell">{{ image.code }}</td>
+                                    <td class="table__cell table-log_cell">{{ image.imageName }}</td>
+                                    {% if image.updated == true %}
+                                        <td class="table__cell table-log_cell"><span class="badge badge-success">Actualizado</span></td>
+                                    {% else %}
+                                        <td class="table__cell table-log_cell">
+                                            <div>
+                                                <span class="badge badge-error">Error</span>
+                                                <p class="live-log__error-message">{{image.error}}</p>
+                                            </div>
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+</div>
