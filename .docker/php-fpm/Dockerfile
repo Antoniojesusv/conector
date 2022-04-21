@@ -69,4 +69,8 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 WORKDIR /var/www
 
-CMD composer update --no-plugins ; php-fpm
+COPY entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+ENTRYPOINT [ "/docker-entrypoint.sh" ]
+
+# CMD composer update --no-plugins ; php-fpm
