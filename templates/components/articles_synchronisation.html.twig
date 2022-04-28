@@ -1,0 +1,80 @@
+<div {{ attributes }} class="synchronisation-composite-card">
+    <div class="composite-card__information">
+        <div class="composite-card__header">
+            <i class="fa-brands fa-product-hunt synchronisation-icon"></i>
+            <div class="server-card__container-name">
+                <span class"server-card__name">Sincronizar productos</span>
+            </div>
+        </div>
+
+        <div class="composite-card__body">
+            <div class="server-card__list">
+                <span class="server-card__item synchronisation-card__folder">Nota: <b class="server-card__item-value">Los productos corresponse a la tabla de articulos dentro de Eurowin</b></span>
+                {% if messageError is not empty %}
+                    <span class="server-card__item live-log__error-item">Error: <b class="server-card__item-value live-log__item-value-error">{{ messageError }}</b></span>
+                {% endif %}
+                {# {% if progressVisibility == false %}
+                    {{ component('articles_progress_bar') }}
+                {% endif %} #}
+            </div>
+            <div class="synchronisation-status hide" data-loading="removeClass(hide)">
+                <h3 class="synchronisation-status__title">Sincronizando</h3>
+                <div class="linear-progress-material">
+                    <div class="bar bar1"></div>
+                    <div class="bar bar2"></div>
+                </div>
+                <span class="server-card__item synchronisation-card__folder synchronisation-status__message">Este proceso puede tardar varios minutos.</span>
+            </div>
+        </div>
+
+        <div class="composite-card__footer">
+            <button class="button" data-loading="addClass(opacity-50) addAttribute(disabled)" data-action="live#action" data-action-name="synchronise">Sincronizar</button>
+        </div>
+    </div>
+    {% if hide == false %}
+        <div class="live-log" data-loading="addClass(hide)">
+            <div class="live-log__header">
+                <span class"live-log__title">Registro</span>
+                <div class="live-log__container-icon" data-action="live#action" data-action-name="synchronise">
+                    {# <button class="live-log__button" data-action="live#action" data-action-name="synchronise"><i class="fa-solid fa-xmark live-log__icon"></i></button> #}
+                </div>
+            </div>
+            <div class="live-log__body">
+                <table class="table table-log">
+                    <tbody class="table__body">
+                        {% if articles is not empty %}
+                            {% for article in articles %}
+                                <tr class="table-log__row">
+                                    <td class="table__cell table-log_cell table-log_image-cell"></td>
+                                    <td class="table__cell table-log_cell">{{ article.code }}</td>
+                                    {# <td class="table__cell table-log_cell">{{ article.name }}</td> #}
+                                    {# <td class="table__cell table-log_cell">{{ article.low }}</td> #}
+                                    {# <td class="table__cell table-log_cell">{{ article.internet }}</td> #}
+                                    {# <td class="table__cell table-log_cell">{{ article.artCanon }}</td> #}
+                                    {# <td class="table__cell table-log_cell">{{ article.pvp }}</td> #}
+                                    {% if article.published == true %}
+                                        <td class="table__cell table-log_cell"><span class="badge badge-success">Publicado</span></td>
+                                    {% else %}
+                                        <td class="table__cell table-log_cell"><span class="badge badge-success">No Publicado</span></td>
+                                    {% endif %}
+                                    {# <td class="table__cell table-log_cell">{{ article.rate }}</td> #}
+                                    <td class="table__cell table-log_cell">{{ article.final }}</td>
+                                    {% if article.updated == true %}
+                                        <td class="table__cell table-log_cell"><span class="badge badge-success">Actualizado</span></td>
+                                    {% else %}
+                                        <td class="table__cell table-log_cell">
+                                            <div>
+                                                <span class="badge badge-error">Error</span>
+                                                <p class="live-log__error-message">{{article.error}}</p>
+                                            </div>
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+</div>

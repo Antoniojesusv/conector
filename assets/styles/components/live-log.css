@@ -1,8 +1,9 @@
 .live-log {
-    display: flex;
+    /* display: flex; */
     position: relative;
     width: 100%;
-    flex-direction: column;
+    /* flex-direction: column; */
+    overflow: auto;
 }
 
 .live-log__header {
