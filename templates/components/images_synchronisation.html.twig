@@ -13,9 +13,17 @@
                 {% if messageError is not empty %}
                     <span class="server-card__item live-log__error-item">Error: <b class="server-card__item-value live-log__item-value-error">{{ messageError }}</b></span>
                 {% endif %}
-                {% if hide == false %}
+                {# {% if hide == false %}
                     {{ component('progress_bar') }}
-                {% endif %}
+                {% endif %} #}
+            </div>
+            <div class="synchronisation-status hide" data-loading="removeClass(hide)">
+                <h3 class="synchronisation-status__title">Sincronizando</h3>
+                <div class="linear-progress-material">
+                    <div class="bar bar1"></div>
+                    <div class="bar bar2"></div>
+                </div>
+                <span class="server-card__item synchronisation-card__folder synchronisation-status__message">Este proceso puede tardar varios minutos.</span>
             </div>
         </div>
 
@@ -24,7 +32,7 @@
         </div>
     </div>
     {% if hide == false %}
-        <div class="live-log">
+        <div class="live-log" data-loading="addClass(hide)">
             <div class="live-log__header">
                 <span class"live-log__title">Registro</span>
                 <div class="live-log__container-icon" data-action="live#action" data-action-name="synchronise">
