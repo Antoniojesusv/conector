@@ -30,9 +30,16 @@ parameters:
     workdir: "%kernel.project_dir%"
     env.file: "%kernel.project_dir%/.env"
     images.log.file: "%kernel.project_dir%/images-log.json"
+    articles.log.file: "%kernel.project_dir%/articles-log.json"
     images.temporary.folder: "%kernel.project_dir%/public/temporaryImages"
 
 services:
+
+    # react.event.loop: 
+    #     class: React\EventLoop\Loop
+
+    # React\EventLoop\Loop: '@react.event.loop'
+
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
@@ -78,3 +85,8 @@ services:
     App\Repository\ArticleRepository:
         arguments:
            $sqlPdoFactory: '@App\DbConnectors\Factories\SqlServerPdoFactory'
+
+    App\Repository\ArticleProductRepository:
+        arguments:
+           $sqlPdoFactory: '@App\DbConnectors\Factories\SqlServerPdoFactory'
+           $mysqlPdoFactory: '@App\DbConnectors\Factories\MysqlPdoFactory'

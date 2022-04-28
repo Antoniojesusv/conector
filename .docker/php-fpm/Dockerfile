@@ -3,6 +3,9 @@ ARG TIMEZONE
 
 ENV ACCEPT_EULA=Y
 
+COPY mirth-pool-1.conf /usr/local/etc/php-fpm.d/mirth-pool-1.conf
+COPY mirth-pool-2.conf /usr/local/etc/php-fpm.d/mirth-pool-2.conf
+
 RUN mv /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
 
 COPY php.ini /usr/local/etc/php/conf.d/docker-php-config.ini
@@ -69,4 +72,8 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 WORKDIR /var/www
 
-CMD composer update --no-plugins ; php-fpm
+COPY entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+ENTRYPOINT [ "/docker-entrypoint.sh" ]
+
+# CMD composer update --no-plugins ; php-fpm

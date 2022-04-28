@@ -1,20 +1,20 @@
 <div {{ attributes }} class="synchronisation-composite-card">
     <div class="composite-card__information">
         <div class="composite-card__header">
-            <i class="fa-solid fa-images synchronisation-icon"></i>
+            <i class="fa-brands fa-product-hunt synchronisation-icon"></i>
             <div class="server-card__container-name">
-                <span class"server-card__name">Sincronizar imagenes</span>
+                <span class"server-card__name">Sincronizar productos</span>
             </div>
         </div>
 
         <div class="composite-card__body">
             <div class="server-card__list">
-                <span class="server-card__item synchronisation-card__folder">Carpeta de fotos eurowin: <b class="server-card__item-value">{{ imagesFolderPath }}</b></span>
+                <span class="server-card__item synchronisation-card__folder">Nota: <b class="server-card__item-value">Los productos corresponse a la tabla de articulos dentro de Eurowin</b></span>
                 {% if messageError is not empty %}
                     <span class="server-card__item live-log__error-item">Error: <b class="server-card__item-value live-log__item-value-error">{{ messageError }}</b></span>
                 {% endif %}
-                {# {% if hide == false %}
-                    {{ component('progress_bar') }}
+                {# {% if progressVisibility == false %}
+                    {{ component('articles_progress_bar') }}
                 {% endif %} #}
             </div>
             <div class="synchronisation-status hide" data-loading="removeClass(hide)">
@@ -42,23 +42,30 @@
             <div class="live-log__body">
                 <table class="table table-log">
                     <tbody class="table__body">
-                        {% if images is not empty %}
-                            {% for image in images %}
+                        {% if articles is not empty %}
+                            {% for article in articles %}
                                 <tr class="table-log__row">
-                                    <td class="table__cell table-log_cell table-log_image-cell">
-                                        <figure class="sidebar__logo-container">
-                                            <img class="sidebar__logo synchronisation-card__image" src={{image.temporaryImageFile}} alt="Image could not be loaded">
-                                        </figure>
-                                    </td>
-                                    <td class="table__cell table-log_cell">{{ image.code }}</td>
-                                    <td class="table__cell table-log_cell">{{ image.imageName }}</td>
-                                    {% if image.updated == true %}
+                                    <td class="table__cell table-log_cell table-log_image-cell"></td>
+                                    <td class="table__cell table-log_cell">{{ article.code }}</td>
+                                    {# <td class="table__cell table-log_cell">{{ article.name }}</td> #}
+                                    {# <td class="table__cell table-log_cell">{{ article.low }}</td> #}
+                                    {# <td class="table__cell table-log_cell">{{ article.internet }}</td> #}
+                                    {# <td class="table__cell table-log_cell">{{ article.artCanon }}</td> #}
+                                    {# <td class="table__cell table-log_cell">{{ article.pvp }}</td> #}
+                                    {% if article.published == true %}
+                                        <td class="table__cell table-log_cell"><span class="badge badge-success">Publicado</span></td>
+                                    {% else %}
+                                        <td class="table__cell table-log_cell"><span class="badge badge-success">No Publicado</span></td>
+                                    {% endif %}
+                                    {# <td class="table__cell table-log_cell">{{ article.rate }}</td> #}
+                                    <td class="table__cell table-log_cell">{{ article.final }}</td>
+                                    {% if article.updated == true %}
                                         <td class="table__cell table-log_cell"><span class="badge badge-success">Actualizado</span></td>
                                     {% else %}
                                         <td class="table__cell table-log_cell">
                                             <div>
                                                 <span class="badge badge-error">Error</span>
-                                                <p class="live-log__error-message">{{image.error}}</p>
+                                                <p class="live-log__error-message">{{article.error}}</p>
                                             </div>
                                         </td>
                                     {% endif %}
