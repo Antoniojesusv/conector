@@ -27,3 +27,4 @@ body {
 @import "synchronisation/synchronisation.css";
 @import "components/live-log.css";
 @import "components/progress-bar.css";
+@import "components/linear-progress-bar.css";
