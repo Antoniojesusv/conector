@@ -1,4 +1,7 @@
 {
+    "cboden/ratchet": {
+        "version": "v0.4.4"
+    },
     "doctrine/annotations": {
         "version": "1.13",
         "recipe": {
@@ -82,8 +85,14 @@
     "egulias/email-validator": {
         "version": "3.1.2"
     },
+    "evenement/evenement": {
+        "version": "v3.0.1"
+    },
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.5"
+    },
+    "guzzlehttp/psr7": {
+        "version": "2.2.1"
     },
     "laminas/laminas-code": {
         "version": "4.5.1"
@@ -118,11 +127,44 @@
     "psr/event-dispatcher": {
         "version": "1.0.0"
     },
+    "psr/http-factory": {
+        "version": "1.0.1"
+    },
+    "psr/http-message": {
+        "version": "1.0.1"
+    },
     "psr/link": {
         "version": "2.0.1"
     },
     "psr/log": {
         "version": "3.0.0"
+    },
+    "ralouphie/getallheaders": {
+        "version": "3.0.3"
+    },
+    "ratchet/rfc6455": {
+        "version": "v0.3.1"
+    },
+    "react/cache": {
+        "version": "v1.1.1"
+    },
+    "react/dns": {
+        "version": "v1.9.0"
+    },
+    "react/event-loop": {
+        "version": "v1.3.0"
+    },
+    "react/promise": {
+        "version": "v2.9.0"
+    },
+    "react/promise-timer": {
+        "version": "v1.8.0"
+    },
+    "react/socket": {
+        "version": "v1.11.0"
+    },
+    "react/stream": {
+        "version": "v1.2.0"
     },
     "sensio/framework-extra-bundle": {
         "version": "6.2",
