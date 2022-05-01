@@ -108,7 +108,7 @@ class ArticleProductRepository
         $low = $articleEntity->getLow();
         $internet = $articleEntity->getInternet();
         $pvp = (float) $articleEntity->getPvp();
-        $artCanon = $articleEntity->getArtCanon();
+        // $artCanon = $articleEntity->getArtCanon();
 
         if ($low === '1') {
             return false;
@@ -122,9 +122,9 @@ class ArticleProductRepository
             return false;
         }
 
-        if ($artCanon === '0') {
-            return false;
-        }
+        // if ($artCanon === '0') {
+        //     return false;
+        // }
 
         return true;
     }
