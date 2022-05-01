@@ -102,8 +102,8 @@
         "release:minor": "tools/tag-release.sh -t minor",
         "release:patch": "tools/tag-release.sh -t patch",
         "build:dev" : "npm run watch",
-        "build:prod": "docker-compose up --build -d",
-        "run:dev": "docker-compose -f docker-compose.dev.yml up --build -d",
+        "build:prod": "docker compose up --build -d",
+        "run:dev": "docker compose -f docker-compose.dev.yml up --build -d",
         "deploy:dev": [
             "@run:dev",
             "@build:dev"
@@ -113,7 +113,7 @@
             "@cs-fix",
             "@check-template",
             "@build:prod",
-            "docker-compose -f docker-compose.dev.yml up --build -d"
+            "docker compose -f docker-compose.dev.yml up --build -d"
         ]
     },
     "conflict": {
