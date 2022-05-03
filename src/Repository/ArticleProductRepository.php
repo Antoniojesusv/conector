@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\DbConnectors\Factories\PdoFactoryI;
 use App\DbConnectors\PdoConnector;
 use App\Model\Synchronisation\ArticleProductEntity;
+use Generator;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use PDO;
 
@@ -44,11 +45,11 @@ class ArticleProductRepository
         return $this->sqlPdoFactory->create();
     }
 
-    public function save(array $entityList): void
+    public function save(iterable $entityList): void
     {
         ini_set('max_execution_time', '600');
 
-        $this->length = count($entityList);
+        // $this->length = count($entityList);
 
         $this->clearJsonLogFile();
 
@@ -76,9 +77,9 @@ class ArticleProductRepository
         $queryPrice->bindParam(":productId", $productId, PDO::PARAM_STR);
 
         foreach ($entityList as $key => $article) {
-            $currentKey = ($key + 1);
+            // $currentKey = ($key + 1);
 
-            $this->currentPercentage = $this->calculateCurrentPertange($currentKey);
+            // $this->currentPercentage = $this->calculateCurrentPertange($currentKey);
 
             if ($this->existRow($article)) {
                 $code = $article->getCode();
@@ -133,7 +134,7 @@ class ArticleProductRepository
         string $rate,
         string $store,
         string $company
-    ): array {
+    ): Generator {
         if ($store === 'All') {
             $sql = "SELECT articulo.codigo, articulo.nombre, articulo.imagen, ";
             $sql .= "articulo.baja, articulo.internet, articulo.art_canon, ";
@@ -178,26 +179,23 @@ class ArticleProductRepository
         return $articlesEntityList;
     }
 
-    private function deleteRepeatedArticles(array $articles): array
+    private function deleteRepeatedArticles(array $articles): Generator
     {
         $repeatedArticles = [];
-        $uniqueArticles = [];
 
         foreach ($articles as $article) {
             $code = $article['codigo'];
             if (!in_array($code, $repeatedArticles)) {
                 $repeatedArticles[] = $code;
-                $uniqueArticles[] = $article;
+                yield $article;
             }
         }
-
-        return $uniqueArticles;
     }
 
-    private function mapToEntity(array $articles): array
+    private function mapToEntity(iterable $articles): Generator
     {
-        return array_map(function ($article) {
-            return new ArticleProductEntity(
+        foreach ($articles as $article) {
+            yield new ArticleProductEntity(
                 $article['codigo'],
                 $article['nombre'],
                 $article['imagen'],
@@ -208,13 +206,46 @@ class ArticleProductRepository
                 $article['tarifa'],
                 $article['final']
             );
-        }, $articles);
+        }
     }
 
-    private function calculateCurrentPertange(int $currentKey): float
-    {
-        return ($currentKey * 100) / $this->length;
-    }
+    // private function deleteRepeatedArticles(array $articles): array
+    // {
+    //     $repeatedArticles = [];
+    //     $uniqueArticles = [];
+
+    //     foreach ($articles as $article) {
+    //         $code = $article['codigo'];
+    //         if (!in_array($code, $repeatedArticles)) {
+    //             $repeatedArticles[] = $code;
+    //             $uniqueArticles[] = $article;
+    //         }
+    //     }
+
+    //     return $uniqueArticles;
+    // }
+
+    // private function mapToEntity(array $articles): array
+    // {
+    //     return array_map(function ($article) {
+    //         return new ArticleProductEntity(
+    //             $article['codigo'],
+    //             $article['nombre'],
+    //             $article['imagen'],
+    //             $article['baja'],
+    //             $article['internet'],
+    //             $article['art_canon'],
+    //             $article['pvp'],
+    //             $article['tarifa'],
+    //             $article['final']
+    //         );
+    //     }, $articles);
+    // }
+
+    // private function calculateCurrentPertange(int $currentKey): float
+    // {
+    //     return ($currentKey * 100) / $this->length;
+    // }
 
     public function getCurrentPercentage(): float
     {
