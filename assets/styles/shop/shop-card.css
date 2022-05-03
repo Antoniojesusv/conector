@@ -28,8 +28,8 @@
     color: #8e8d93;
 }
 
-.shop-card__item:first-child {
-    padding-bottom: 1rem;
+.shop-card__item:not(:last-child) {
+    padding-bottom: 0.5rem;
 }
 
 .shop-card__item-value {

@@ -19,10 +19,11 @@ class ShopService
     {
         [
             'name' => $name,
-            'rate' => $rate
+            'rate' => $rate,
+            'store' => $store
         ] = $data;
 
-        $shopEntity = new ShopEntity($name, $rate);
+        $shopEntity = new ShopEntity($name, $rate, $store);
 
         $this->shopRepository->save($shopEntity);
     }

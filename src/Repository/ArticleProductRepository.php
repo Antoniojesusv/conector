@@ -46,7 +46,7 @@ class ArticleProductRepository
 
     public function save(array $entityList): void
     {
-        ini_set('max_execution_time', '300');
+        ini_set('max_execution_time', '600');
 
         $this->length = count($entityList);
 
@@ -134,27 +134,64 @@ class ArticleProductRepository
         string $store,
         string $company
     ): array {
-        $sql = "SELECT articulo.codigo, articulo.nombre, articulo.imagen, ";
-        $sql .= "articulo.baja, articulo.internet, articulo.art_canon, ";
-        $sql .= "pvp.pvp, pvp.tarifa, stocks2.final ";
-        $sql .= "FROM " . $this->from . " ";
-        $sql .= "INNER JOIN pvp ON (articulo.codigo = pvp.articulo) ";
-        $sql .= "INNER JOIN stocks2 ON (articulo.codigo = stocks2.articulo) ";
-        $sql .= "WHERE pvp.tarifa = :rate ";
-        $sql .= "AND stocks2.almacen = :store ";
-        $sql .= "AND stocks2.empresa = :company";
+        if ($store === 'All') {
+            $sql = "SELECT articulo.codigo, articulo.nombre, articulo.imagen, ";
+            $sql .= "articulo.baja, articulo.internet, articulo.art_canon, ";
+            $sql .= "pvp.pvp, pvp.tarifa, ";
+            $sql .= "(SELECT SUM(FINAL) TOTALSTOCK FROM stocks2 WHERE articulo = articulo.codigo GROUP BY ARTICULO) AS final ";
+            $sql .= "FROM " . $this->from . " ";
+            $sql .= "INNER JOIN pvp ON (articulo.codigo = pvp.articulo) ";
+            $sql .= "INNER JOIN stocks2 ON (articulo.codigo = stocks2.articulo) ";
+            $sql .= "WHERE pvp.tarifa = :rate ";
+            $sql .= "AND stocks2.empresa = :company";
+        } else {
+            $sql = "SELECT articulo.codigo, articulo.nombre, articulo.imagen, ";
+            $sql .= "articulo.baja, articulo.internet, articulo.art_canon, ";
+            $sql .= "pvp.pvp, pvp.tarifa, stocks2.final ";
+            $sql .= "FROM " . $this->from . " ";
+            $sql .= "INNER JOIN pvp ON (articulo.codigo = pvp.articulo) ";
+            $sql .= "INNER JOIN stocks2 ON (articulo.codigo = stocks2.articulo) ";
+            $sql .= "WHERE pvp.tarifa = :rate ";
+            $sql .= "AND stocks2.almacen = :store ";
+            $sql .= "AND stocks2.empresa = :company";
+        }
 
         $query = $this->connection->prepare($sql);
 
         $query->bindParam(":rate", $rate, PDO::PARAM_STR);
-        $query->bindParam(":store", $store, PDO::PARAM_STR);
+
+        if ($store !== 'All') {
+            $query->bindParam(":store", $store, PDO::PARAM_STR);
+        }
+
         $query->bindParam(":company", $company, PDO::PARAM_STR);
 
         $query->execute();
 
         $articles = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        if ($store === 'All') {
+            $articles = $this->deleteRepeatedArticles($articles);
+        }
+
         $articlesEntityList = $this->mapToEntity($articles);
         return $articlesEntityList;
+    }
+
+    private function deleteRepeatedArticles(array $articles): array
+    {
+        $repeatedArticles = [];
+        $uniqueArticles = [];
+
+        foreach ($articles as $article) {
+            $code = $article['codigo'];
+            if (!in_array($code, $repeatedArticles)) {
+                $repeatedArticles[] = $code;
+                $uniqueArticles[] = $article;
+            }
+        }
+
+        return $uniqueArticles;
     }
 
     private function mapToEntity(array $articles): array

@@ -8,13 +8,16 @@ class ShopEntity
 {
     private string $name;
     private int $rate;
+    private string $store;
 
     public function __construct(
         string $name,
-        string $rate
+        string $rate,
+        string $store
     ) {
         $this->setName($name);
         $this->setRate($rate);
+        $this->setStore($store);
     }
 
     public function getName(): string
@@ -39,5 +42,15 @@ class ShopEntity
     public function setRate(int $rate): void
     {
         $this->rate = $rate;
+    }
+
+    public function getStore(): string
+    {
+        return $this->store;
+    }
+
+    public function setStore(string $store): void
+    {
+        $this->store = $store;
     }
 }

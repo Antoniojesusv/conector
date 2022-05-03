@@ -21,7 +21,7 @@ class ArticlesSynchronisationService
     public function synchronise(): void
     {
         $rate = $this->params->get('shop.rate');
-        $store = '00';
+        $store = $this->params->get('shop.store');
         $company = '01';
 
         $entityList = $this->articleRepository->getAllByRateStockStoreAndCompany($rate, $store, $company);
