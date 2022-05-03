@@ -35,6 +35,20 @@
             </div>
         </div>
 
+        <div class="form__group">
+            {{ form_label(form.store, null, {'label_attr': {'class': 'form__label'}}) }}
+            <div>
+                {% if form.store.vars.valid == false %}
+                    {{ form_widget(form.store, {'attr': {'class': 'form__control form__control--invalid'}}) }}
+                {% else %}
+                    {{ form_widget(form.store, {'attr': {'class': 'form__control'}}) }}
+                {% endif %}
+                <div class="form__error">
+                    {{form.store.vars.errors}}
+                </div>
+            </div>
+        </div>
+
         <div class="form__button-group">
             {{ form_row(form.edit, { 'label': 'Editar', 'attr': { 'class': 'button form__button-group-item'} }) }}
             <a class="button button--dark form__button-group-item" href="{{ path('shop_index') }}">Volver</a>

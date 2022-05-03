@@ -20,6 +20,8 @@ class ShopModel
      */
     private int $rate;
 
+    private string $store;
+
     public function getName(): string
     {
         return $this->name;
@@ -40,17 +42,29 @@ class ShopModel
         $this->rate = $rate;
     }
 
+    public function getStore(): string
+    {
+        return $this->store;
+    }
+
+    public function setStore(string $store = ''): void
+    {
+        $this->store = $store;
+    }
+
     public function setData(ShopEntity $shop): void
     {
         $this->name = $shop->getName();
         $this->rate = $shop->getRate();
+        $this->store = $shop->getStore();
     }
 
     public function toArray(): array
     {
         return [
             'name' => $this->name,
-            'rate' => $this->rate
+            'rate' => $this->rate,
+            'store' => $this->store
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -16,6 +17,9 @@ class ShopType extends AbstractType
         $builder
             ->add('name', TextType::class)
             ->add('rate', NumberType::class)
+            ->add('store', ChoiceType::class, [
+                'choices'  => $options['stores'],
+            ])
             ->add('edit', SubmitType::class)
         ;
     }
@@ -24,6 +28,9 @@ class ShopType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => ShopModel::class,
+            'stores' => [],
         ]);
+
+        $resolver->setAllowedTypes('stores', 'array');
     }
 }
