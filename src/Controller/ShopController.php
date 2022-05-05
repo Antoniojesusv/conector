@@ -6,6 +6,7 @@ use App\Form\ShopModel;
 use App\Form\ShopType;
 use App\Model\Shop\ShopService;
 use App\Repository\ShopRepository;
+use App\Repository\Stocks2Repository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,6 +32,7 @@ class ShopController extends AbstractController
     public function edit(
         Request $request,
         ShopRepository $shopRepository,
+        Stocks2Repository $stocks2Repository,
         ShopService $shopService
     ): Response {
         $shopModel = new ShopModel();
@@ -40,7 +42,10 @@ class ShopController extends AbstractController
             $shopModel->setData($shopEntity);
         }
 
-        $form = $this->createForm(ShopType::class, $shopModel);
+        $stocks2Entity = $stocks2Repository->getStore();
+        $stores = $stocks2Entity->getStore();
+
+        $form = $this->createForm(ShopType::class, $shopModel, ['stores' => $stores]);
         $form->handleRequest($request);
 
         if ($form && $form->isSubmitted() && $form->isValid()) {

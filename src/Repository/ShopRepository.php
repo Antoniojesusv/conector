@@ -10,7 +10,8 @@ class ShopRepository implements ShopRepositoryI
 {
     const SQL_SERVER_PATTERNS = [
         '/SHOP_NAME=.*/',
-        '/SHOP_RATE=.*/'
+        '/SHOP_RATE=.*/',
+        '/SHOP_STORE=.*/'
     ];
 
     public function __construct(
@@ -35,10 +36,11 @@ class ShopRepository implements ShopRepositoryI
 
         [
             'name' => $name,
-            'rate' => $rate
+            'rate' => $rate,
+            'store' => $store
         ] = $shopParams;
 
-        $shopEntity = new ShopEntity($name, $rate);
+        $shopEntity = new ShopEntity($name, $rate, $store);
         return $shopEntity;
     }
 
@@ -48,6 +50,7 @@ class ShopRepository implements ShopRepositoryI
         
         $connectionParams['name'] = $this->params->get('shop.name');
         $connectionParams['rate'] = $this->params->get('shop.rate');
+        $connectionParams['store'] = $this->params->get('shop.store');
 
         return $connectionParams;
     }
@@ -56,10 +59,12 @@ class ShopRepository implements ShopRepositoryI
     {
         $name = $shopEntity->getName();
         $rate = $shopEntity->getRate();
+        $store = $shopEntity->getStore();
 
         $replacements = [
             "SHOP_NAME=\"$name\"",
-            "SHOP_RATE=$rate"
+            "SHOP_RATE=$rate",
+            "SHOP_STORE=\"$store\""
         ];
 
         return preg_replace($this::SQL_SERVER_PATTERNS, $replacements, $envFile);

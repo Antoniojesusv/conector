@@ -25,6 +25,7 @@ parameters:
 
     shop.name: '%env(SHOP_NAME)%'
     shop.rate: '%env(SHOP_RATE)%'
+    shop.store: '%env(SHOP_STORE)%'
     server.photos.path: '%env(SERVER_PHOTOS_PATH)%'
 
     workdir: "%kernel.project_dir%"
@@ -90,3 +91,7 @@ services:
         arguments:
            $sqlPdoFactory: '@App\DbConnectors\Factories\SqlServerPdoFactory'
            $mysqlPdoFactory: '@App\DbConnectors\Factories\MysqlPdoFactory'
+
+    App\Repository\Stocks2Repository:
+        arguments:
+           $sqlPdoFactory: '@App\DbConnectors\Factories\SqlServerPdoFactory'
