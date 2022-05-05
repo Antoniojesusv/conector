@@ -27,6 +27,7 @@
 /logs
 docker-entrypoint-*/
 Eurowin/*
+fotoseurowin/*
 **/temporaryImages/*
 ###< Zip lambda service ###
 ###########< CONNECTOR ##############
