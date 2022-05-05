@@ -43,6 +43,8 @@ class ArticleRepository implements ArticleRepositoryI
 
     public function save(array $entityList): void
     {
+        ini_set('max_execution_time', '1500');
+        
         $this->length = count($entityList);
 
         // if ($length <= 10) {
