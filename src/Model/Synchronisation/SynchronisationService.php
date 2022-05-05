@@ -81,7 +81,7 @@ class SynchronisationService
         $imagesFilesNameList = [];
         
         foreach ($filesPath as $filePath) {
-            preg_match('/\d+\].+/', $filePath, $match);
+            preg_match('/[\w\d]+\].+/', $filePath, $match);
             $imagesFilesNameList[] = $match[0];
         }
 
