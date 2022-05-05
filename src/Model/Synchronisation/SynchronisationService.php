@@ -5,6 +5,7 @@ namespace App\Model\Synchronisation;
 use App\Services\DirectoryReadService;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Error;
+use Generator;
 
 class SynchronisationService
 {
@@ -39,9 +40,9 @@ class SynchronisationService
         $imagesFilesNameList = $this->getImagesFilesName($filesPath);
         $imagesFilesNameAssociativeList = $this->buildImagesFilesNameAssociativeList($imagesFilesNameList);
         $entityList = $this->buildEntityList($imagesFilesNameAssociativeList);
-        $this->copyImageToTemporaryFolder($entityList);
+        $entityGenerator = $this->copyImageToTemporaryFolder($entityList);
 
-        $this->articleRepository->save($entityList);
+        $this->articleRepository->save($entityGenerator);
     }
 
     public function getImagesFolderPath(): string
@@ -61,7 +62,7 @@ class SynchronisationService
         }
     }
 
-    private function copyImageToTemporaryFolder(array $entityList): void
+    private function copyImageToTemporaryFolder(iterable $entityList): Generator
     {
         $temporaryFolder = $this->params->get('images.temporary.folder');
 
@@ -73,48 +74,75 @@ class SynchronisationService
             if (!copy($source, $destination)) {
                 throw new Error("The file '$fileName' cannot be copied.");
             }
+
+            yield $entity;
         }
     }
 
-    private function getImagesFilesName(array $filesPath): array
+    private function getImagesFilesName(array $filesPath): Generator
     {
-        $imagesFilesNameList = [];
+        // $imagesFilesNameList = [];
         
         foreach ($filesPath as $filePath) {
-            preg_match('/\d+\].+/', $filePath, $match);
-            $imagesFilesNameList[] = $match[0];
+            $filePathSanitized = preg_replace('/\s/', '', $filePath);
+            preg_match('/[\w\d-]+\].+/', $filePathSanitized, $match);
+
+            if ($this->wasSanitized($filePath)) {
+                $this->renameImageFile($filePath, $filePathSanitized);
+            }
+            // $imagesFilesNameList[] = $match[0];
+
+            if (empty($match[0])) {
+                continue;
+                // throw new Error("The file '$filePath' cannot be synchronized.");
+            }
+
+            yield $match[0];
         }
 
-        return $imagesFilesNameList;
+        // return $imagesFilesNameList;
     }
 
-    private function buildEntityList(array $imagesFilesNameAssociativeList): array
+    private function wasSanitized(string $filePath): bool
     {
-        $entityList = [];
-        
-        foreach ($imagesFilesNameAssociativeList as ['code' => $code, 'imageName' => $fileName, 'imagen' => $imagePath]) {
-            $entityList[] = new ArticleEntity($code, $fileName, $imagePath);
-        }
-
-        return $entityList;
+        preg_match('/\s/', $filePath, $match);
+        return !empty($match[0]);
     }
 
-    private function buildImagesFilesNameAssociativeList(array $imagesFilesNameList): array
+    private function renameImageFile(string $filePath, string $filePathSanitized): void
     {
-        $imagesFilesNameAssociativeList = [];
+        rename($filePath, $filePathSanitized);
+    }
+
+    private function buildImagesFilesNameAssociativeList(Iterable $imagesFilesNameList): Generator
+    {
+        // $imagesFilesNameAssociativeList = [];
 
         foreach ($imagesFilesNameList as $fileName) {
             $code = $this->getCodeFromFileName($fileName);
             $imagePath = $this->getImagesFolderPath() . DIRECTORY_SEPARATOR . $fileName;
-            $imagesFilesNameAssociativeList[] = ['code' => $code, 'imageName' => $fileName, 'imagen' => $imagePath];
+            // $imagesFilesNameAssociativeList[] = ['code' => $code, 'imageName' => $fileName, 'imagen' => $imagePath];
+            yield ['code' => $code, 'imageName' => $fileName, 'imagen' => $imagePath];
         }
 
-        return $imagesFilesNameAssociativeList;
+        // return $imagesFilesNameAssociativeList;
+    }
+
+    private function buildEntityList(Iterable $imagesFilesNameAssociativeList): Generator
+    {
+        // $entityList = [];
+        
+        foreach ($imagesFilesNameAssociativeList as ['code' => $code, 'imageName' => $fileName, 'imagen' => $imagePath]) {
+            // $entityList[] = new ArticleEntity($code, $fileName, $imagePath);
+            yield new ArticleEntity($code, $fileName, $imagePath);
+        }
+
+        // return $entityList;
     }
 
     private function getCodeFromFileName(string $fileName): string
     {
-        preg_match('/\d+/', $fileName, $match);
+        preg_match('/^[\w\d]+/', $fileName, $match);
         return $match[0];
     }
 

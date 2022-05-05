@@ -47,7 +47,7 @@ class ArticleProductRepository
 
     public function save(iterable $entityList): void
     {
-        ini_set('max_execution_time', '600');
+        ini_set('max_execution_time', '1500');
 
         // $this->length = count($entityList);
 

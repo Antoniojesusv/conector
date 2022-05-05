@@ -41,9 +41,11 @@ class ArticleRepository implements ArticleRepositoryI
         return $this->sqlPdoFactory->create();
     }
 
-    public function save(array $entityList): void
+    public function save(iterable $entityList): void
     {
-        $this->length = count($entityList);
+        ini_set('max_execution_time', '1500');
+
+        // $this->length = count($entityList);
 
         // if ($length <= 10) {
         // }
@@ -61,13 +63,13 @@ class ArticleRepository implements ArticleRepositoryI
         $code = null;
         $imagePath = null;
 
-        $query->bindParam(":code", $code, PDO::PARAM_INT);
+        $query->bindParam(":code", $code, PDO::PARAM_STR);
         $query->bindParam(":imagePath", $imagePath, PDO::PARAM_STR);
 
         foreach ($entityList as $key => $article) {
-            $currentKey = ($key + 1);
+            // $currentKey = ($key + 1);
 
-            $this->currentPercentage = $this->calculateCurrentPertange($currentKey);
+            // $this->currentPercentage = $this->calculateCurrentPertange($currentKey);
 
             if ($this->existRow($article)) {
                 $code = $article->getCode();
@@ -86,10 +88,10 @@ class ArticleRepository implements ArticleRepositoryI
         }
     }
 
-    private function calculateCurrentPertange(int $currentKey): float
-    {
-        return ($currentKey * 100) / $this->length;
-    }
+    // private function calculateCurrentPertange(int $currentKey): float
+    // {
+    //     return ($currentKey * 100) / $this->length;
+    // }
 
     public function getCurrentPercentage(): float
     {
