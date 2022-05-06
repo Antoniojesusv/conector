@@ -45,6 +45,25 @@ class SynchronisationService
         $this->articleRepository->save($entityGenerator);
     }
 
+    private function getEurowinFolder(): string
+    {
+        $folderPath = $this->params->get('server.photos.path');
+
+        preg_match("/^C:/", $folderPath, $match);
+
+        if (empty($match[0])) {
+            return $folderPath;
+        }
+
+        preg_match("/^C:(.*)/", $folderPath, $match);
+
+        $serverName = "\\\\DOTEW";
+        $path = strtoupper($match[1]);
+
+        $folderPath = "$serverName$path";
+        return $folderPath;
+    }
+
     public function getImagesFolderPath(): string
     {
         return $this->params->get('server.photos.path');
@@ -121,8 +140,9 @@ class SynchronisationService
         foreach ($imagesFilesNameList as $fileName) {
             $code = $this->getCodeFromFileName($fileName);
             $imagePath = $this->getImagesFolderPath() . DIRECTORY_SEPARATOR . $fileName;
+            $eurowinImagePath = $this->getEurowinFolder() . DIRECTORY_SEPARATOR . $fileName;
             // $imagesFilesNameAssociativeList[] = ['code' => $code, 'imageName' => $fileName, 'imagen' => $imagePath];
-            yield ['code' => $code, 'imageName' => $fileName, 'imagen' => $imagePath];
+            yield ['code' => $code, 'imageName' => $fileName, 'imagen' => $imagePath, 'eurowinImage' => $eurowinImagePath];
         }
 
         // return $imagesFilesNameAssociativeList;
@@ -132,9 +152,9 @@ class SynchronisationService
     {
         // $entityList = [];
         
-        foreach ($imagesFilesNameAssociativeList as ['code' => $code, 'imageName' => $fileName, 'imagen' => $imagePath]) {
+        foreach ($imagesFilesNameAssociativeList as ['code' => $code, 'imageName' => $fileName, 'imagen' => $imagePath, 'eurowinImage' => $eurowinImagePath]) {
             // $entityList[] = new ArticleEntity($code, $fileName, $imagePath);
-            yield new ArticleEntity($code, $fileName, $imagePath);
+            yield new ArticleEntity($code, $fileName, $imagePath, $eurowinImagePath);
         }
 
         // return $entityList;

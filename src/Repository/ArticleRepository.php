@@ -73,7 +73,7 @@ class ArticleRepository implements ArticleRepositoryI
 
             if ($this->existRow($article)) {
                 $code = $article->getCode();
-                $imagePath = $article->getImage();
+                $imagePath = $article->getEurowinImage();
                 $query->execute();
                 $data = $article->toArray();
                 $data['updated'] = true;
