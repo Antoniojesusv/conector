@@ -105,6 +105,7 @@
         "build:prod": "docker compose up --build -d",
         "run:dev": "docker compose -f docker-compose.dev.yml up --build -d",
         "deploy:dev": [
+            "Composer\\Config::disableProcessTimeout",
             "@run:dev",
             "@build:dev"
         ],
