@@ -13,7 +13,12 @@ use PDO;
 
 class ArticleRepository implements ArticleRepositoryI
 {
-    const LENGTH_ERROR_MESSAGE = "SQLSTATE[22001]: [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]String or binary data would be truncated.";
+    const LENGTH_ERROR_MESSAGE = [
+        "SQLSTATE[22001]: [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]String or binary data would be truncated.",
+        "SQLSTATE[22001]: [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Los datos de cadena o binarios se truncarían.",
+        "SQLSTATE[22001]: [Microsoft][ODBC Driver 18 for SQL Server][SQL Server]String or binary data would be truncated.",
+        "SQLSTATE[22001]: [Microsoft][ODBC Driver 18 for SQL Server][SQL Server]Los datos de cadena o binarios se truncarían."
+    ];
     private PdoFactoryI $sqlPdoFactory;
     private PDO $connection;
     private int $length = 0;
@@ -82,7 +87,7 @@ class ArticleRepository implements ArticleRepositoryI
                 } catch (Exception $e) {
                     $message = $e->getMessage();
 
-                    if ($this::LENGTH_ERROR_MESSAGE === $message) {
+                    if (in_array($message, $this::LENGTH_ERROR_MESSAGE)) {
                         $imagePath = $article->getEurowinImage();
 
                         throw new Error(json_encode(
