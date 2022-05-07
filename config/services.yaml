@@ -27,6 +27,7 @@ parameters:
     shop.rate: '%env(SHOP_RATE)%'
     shop.store: '%env(SHOP_STORE)%'
     server.photos.path: '%env(SERVER_PHOTOS_PATH)%'
+    server.eurowin.photos.path: '%env(SERVER_EUROWIN_PHOTOS_PATH)%'
 
     workdir: "%kernel.project_dir%"
     env.file: "%kernel.project_dir%/.env"

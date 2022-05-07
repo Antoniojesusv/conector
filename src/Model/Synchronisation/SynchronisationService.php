@@ -48,6 +48,7 @@ class SynchronisationService
     private function getEurowinFolder(): string
     {
         $folderPath = $this->params->get('server.photos.path');
+        // $folderPath = $this->params->get('server.eurowin.photos.path');
 
         preg_match("/^C:/", $folderPath, $match);
 

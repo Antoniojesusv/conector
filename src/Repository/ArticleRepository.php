@@ -6,11 +6,14 @@ use App\DbConnectors\Factories\PdoFactoryI;
 use App\DbConnectors\PdoConnector;
 use App\Model\Synchronisation\ArticleEntity;
 use App\Model\Synchronisation\ArticleRepositoryI;
+use Error;
+use Exception;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use PDO;
 
 class ArticleRepository implements ArticleRepositoryI
 {
+    const LENGTH_ERROR_MESSAGE = "SQLSTATE[22001]: [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]String or binary data would be truncated.";
     private PdoFactoryI $sqlPdoFactory;
     private PDO $connection;
     private int $length = 0;
@@ -74,7 +77,26 @@ class ArticleRepository implements ArticleRepositoryI
             if ($this->existRow($article)) {
                 $code = $article->getCode();
                 $imagePath = $article->getEurowinImage();
-                $query->execute();
+                try {
+                    $query->execute();
+                } catch (Exception $e) {
+                    $message = $e->getMessage();
+
+                    if ($this::LENGTH_ERROR_MESSAGE === $message) {
+                        $imagePath = $article->getEurowinImage();
+
+                        throw new Error(json_encode(
+                            [
+                                "Mensage" => "La longitud de la ruta de la imagen supera la longitud permitida (90)",
+                                "Articulo" => $code,
+                                "Ruta" => $imagePath,
+                                "Longitud" => strlen($imagePath)
+                            ]
+                        ), JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+                    }
+
+                    throw new Error($message);
+                }
                 $data = $article->toArray();
                 $data['updated'] = true;
             } else {
