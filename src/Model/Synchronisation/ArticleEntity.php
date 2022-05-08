@@ -72,7 +72,7 @@ class ArticleEntity
             throw new Exception('The eurowinImage cannot be empty');
         }
 
-        $this->eurowinImage = $eurowinImage;
+        $this->eurowinImage = strtoupper($eurowinImage);
     }
 
     public function toArray(): array

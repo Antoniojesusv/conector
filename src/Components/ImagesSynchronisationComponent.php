@@ -50,7 +50,7 @@ class ImagesSynchronisationComponent
         try {
             $this->messageError = '';
             $this->showLogDisplay();
-            $this->synchronisationService->deleteTemporaryImages();
+            // $this->synchronisationService->deleteTemporaryImages();
             $this->synchronisationService->synchronise();
             $this->images = $this->articleRepository->getAll();
         } catch (Error $error) {

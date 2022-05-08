@@ -39,8 +39,8 @@ class SynchronisationService
 
         $imagesFilesNameList = $this->getImagesFilesName($filesPath);
         $imagesFilesNameAssociativeList = $this->buildImagesFilesNameAssociativeList($imagesFilesNameList);
-        $entityList = $this->buildEntityList($imagesFilesNameAssociativeList);
-        $entityGenerator = $this->copyImageToTemporaryFolder($entityList);
+        $entityGenerator = $this->buildEntityList($imagesFilesNameAssociativeList);
+        // $entityGenerator = $this->copyImageToTemporaryFolder($entityList);
 
         $this->articleRepository->save($entityGenerator);
     }
@@ -70,34 +70,34 @@ class SynchronisationService
         return $this->params->get('server.photos.path');
     }
 
-    public function deleteTemporaryImages(): void
-    {
-        $temporaryFolder = $this->params->get('images.temporary.folder');
-        $filesPath = $this->directoryReadService->readFilesFromDirectory($temporaryFolder);
+    // public function deleteTemporaryImages(): void
+    // {
+    //     $temporaryFolder = $this->params->get('images.temporary.folder');
+    //     $filesPath = $this->directoryReadService->readFilesFromDirectory($temporaryFolder);
 
-        foreach ($filesPath as $file) {
-            if (!unlink($file)) {
-                throw new Error("There was a error deleting the file $file");
-            }
-        }
-    }
+    //     foreach ($filesPath as $file) {
+    //         if (!unlink($file)) {
+    //             throw new Error("There was a error deleting the file $file");
+    //         }
+    //     }
+    // }
 
-    private function copyImageToTemporaryFolder(iterable $entityList): Generator
-    {
-        $temporaryFolder = $this->params->get('images.temporary.folder');
+    // private function copyImageToTemporaryFolder(iterable $entityList): Generator
+    // {
+    //     $temporaryFolder = $this->params->get('images.temporary.folder');
 
-        foreach ($entityList as $entity) {
-            $source = $entity->getImage();
-            $fileName = $entity->getImageName();
-            $destination = $temporaryFolder . DIRECTORY_SEPARATOR . $fileName;
+    //     foreach ($entityList as $entity) {
+    //         $source = $entity->getImage();
+    //         $fileName = $entity->getImageName();
+    //         $destination = $temporaryFolder . DIRECTORY_SEPARATOR . $fileName;
 
-            if (!copy($source, $destination)) {
-                throw new Error("The file '$fileName' cannot be copied.");
-            }
+    //         if (!copy($source, $destination)) {
+    //             throw new Error("The file '$fileName' cannot be copied.");
+    //         }
 
-            yield $entity;
-        }
-    }
+    //         yield $entity;
+    //     }
+    // }
 
     private function getImagesFilesName(array $filesPath): Generator
     {
