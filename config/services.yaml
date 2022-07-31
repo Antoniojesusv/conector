@@ -27,11 +27,14 @@ parameters:
     shop.rate: '%env(SHOP_RATE)%'
     shop.store: '%env(SHOP_STORE)%'
     server.photos.path: '%env(SERVER_PHOTOS_PATH)%'
+    server.eurowin.photos.path: '%env(SERVER_EUROWIN_PHOTOS_PATH)%'
+    articles.progress.update: '%env(ARTICLES_UPDATE_PROGRESS)%'
 
     workdir: "%kernel.project_dir%"
     env.file: "%kernel.project_dir%/.env"
     images.log.file: "%kernel.project_dir%/images-log.json"
     articles.log.file: "%kernel.project_dir%/articles-log.json"
+    error.log.file: "%kernel.project_dir%/error-log.json"
     images.temporary.folder: "%kernel.project_dir%/public/temporaryImages"
 
 services:

@@ -45,11 +45,11 @@
                         {% if images is not empty %}
                             {% for image in images %}
                                 <tr class="table-log__row">
-                                    <td class="table__cell table-log_cell table-log_image-cell">
+                                    {# <td class="table__cell table-log_cell table-log_image-cell">
                                         <figure class="sidebar__logo-container">
                                             <img class="sidebar__logo synchronisation-card__image" src={{image.temporaryImageFile}} alt="Image could not be loaded">
                                         </figure>
-                                    </td>
+                                    </td> #}
                                     <td class="table__cell table-log_cell">{{ image.code }}</td>
                                     <td class="table__cell table-log_cell">{{ image.imageName }}</td>
                                     {% if image.updated == true %}

@@ -9,15 +9,18 @@ class ArticleEntity
     private string $code;
     private string $imageName;
     private string $image;
+    private string $eurowinImage;
 
     public function __construct(
         string $code,
         string $imageName,
         string $image,
+        string $eurowinImage
     ) {
         $this->setCode($code);
         $this->setImageName($imageName);
         $this->setImage($image);
+        $this->setEurowinImage($eurowinImage);
     }
 
     public function getCode(): string
@@ -58,6 +61,20 @@ class ArticleEntity
         $this->image = $image;
     }
 
+    public function getEurowinImage(): string
+    {
+        return $this->eurowinImage;
+    }
+
+    public function setEurowinImage(string $eurowinImage): void
+    {
+        if (empty($eurowinImage)) {
+            throw new Exception('The eurowinImage cannot be empty');
+        }
+
+        $this->eurowinImage = strtoupper($eurowinImage);
+    }
+
     public function toArray(): array
     {
         return [
@@ -65,6 +82,7 @@ class ArticleEntity
             'imageName' => $this->imageName,
             'temporaryImageFile' => $this->getTemporaryImageFile(),
             'image' => $this->image,
+            'eurowinImage' => $this->eurowinImage
         ];
     }
 
@@ -72,7 +90,8 @@ class ArticleEntity
     {
         return json_encode([
             'code' => $this->code,
-            'image' => $this->image
+            'image' => $this->image,
+            'eurowinImage' => $this->eurowinImage
         ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
     }
 

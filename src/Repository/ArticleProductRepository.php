@@ -47,48 +47,75 @@ class ArticleProductRepository
 
     public function save(iterable $entityList): void
     {
-        ini_set('max_execution_time', '1500');
+        ini_set('max_execution_time', '3500');
 
         // $this->length = count($entityList);
 
         $this->clearJsonLogFile();
 
-        $sqlStock = "UPDATE frthv_virtuemart_products ";
-        $sqlStock .= "SET product_in_stock = :final, published = :productPublished ";
-        $sqlStock .= "WHERE product_sku = :code";
+        // $sqlStock = "UPDATE frthv_virtuemart_products ";
+        // $sqlStock .= "SET product_in_stock = :final, published = :productPublished ";
+        // $sqlStock .= "WHERE product_sku = :code";
 
-        $sqlPrice = "UPDATE frthv_virtuemart_product_prices ";
-        $sqlPrice .= "SET product_price = :price ";
-        $sqlPrice .= "WHERE virtuemart_product_id = :productId";
+        // $sqlPrice = "UPDATE frthv_virtuemart_product_prices ";
+        // $sqlPrice .= "SET product_price = :price ";
+        // $sqlPrice .= "WHERE virtuemart_product_id = :productId";
+
+        $sqlStock = "UPDATE bc_stock_available ";
+        $sqlStock .= "SET quantity = :final ";
+        $sqlStock .= "WHERE id_product = :productId;";
+
+        $sqlProductPrice = "UPDATE bc_product ";
+        $sqlProductPrice .= "SET price = :price, active = :productPublished ";
+        $sqlProductPrice .= "WHERE id_product = :productId;";
+
+        $sqlProductShopPrice = "UPDATE bc_product_shop ";
+        $sqlProductShopPrice .= "SET price = :price, active = :productPublished ";
+        $sqlProductShopPrice .= "WHERE id_product = :productId;";
 
         $queryStock = $this->mysqlConnection->prepare($sqlStock);
-        $queryPrice = $this->mysqlConnection->prepare($sqlPrice);
+        $queryPrice = $this->mysqlConnection->prepare($sqlProductPrice);
+        $queryShopPrice = $this->mysqlConnection->prepare($sqlProductShopPrice);
 
-        $code = null;
+        // $code = null;
         $final = null;
         $productPublished = null;
         $pvp = null;
         $productId = null;
 
-        $queryStock->bindParam(":code", $code, PDO::PARAM_INT);
+        // $queryStock->bindParam(":code", $code, PDO::PARAM_INT);
         $queryStock->bindParam(":final", $final, PDO::PARAM_STR);
-        $queryStock->bindParam(":productPublished", $productPublished, PDO::PARAM_BOOL);
+        $queryStock->bindParam(":productId", $productId, PDO::PARAM_STR);
         $queryPrice->bindParam(":price", $pvp, PDO::PARAM_STR);
+        $queryPrice->bindParam(":productPublished", $productPublished, PDO::PARAM_BOOL);
         $queryPrice->bindParam(":productId", $productId, PDO::PARAM_STR);
+        $queryShopPrice->bindParam(":price", $pvp, PDO::PARAM_STR);
+        $queryShopPrice->bindParam(":productPublished", $productPublished, PDO::PARAM_BOOL);
+        $queryShopPrice->bindParam(":productId", $productId, PDO::PARAM_STR);
+
+        $currentLength = 0;
 
         foreach ($entityList as $key => $article) {
+            if ($currentLength === 2000) {
+                break;
+            }
             // $currentKey = ($key + 1);
 
             // $this->currentPercentage = $this->calculateCurrentPertange($currentKey);
 
-            if ($this->existRow($article)) {
-                $code = $article->getCode();
+            $productId = $this->getProductId($article);
+
+            // $this->existRow($article);
+            
+            if ($productId !== '0') {
+                // $code = $article->getCode();
                 $final = $article->getFinal();
                 $productPublished = $this->isProductPublished($article);
                 $productId = $this->getProductId($article);
                 $pvp = $article->getPvp();
                 $queryStock->execute();
-                $queryPrice->execute();
+                // $queryPrice->execute();
+                // $queryShopPrice->execute();
                 $data = $article->toArray();
                 $data['published'] = $productPublished;
                 $data['updated'] = true;
@@ -101,6 +128,8 @@ class ArticleProductRepository
             }
     
             $this->addToJsonLog($data);
+
+            $currentLength++;
         }
     }
 
@@ -171,12 +200,31 @@ class ArticleProductRepository
 
         $articles = $query->fetchAll(PDO::FETCH_ASSOC);
 
+        $this->length = $this->getArticlesLength($articles);
+
         if ($store === 'All') {
             $articles = $this->deleteRepeatedArticles($articles);
         }
 
         $articlesEntityList = $this->mapToEntity($articles);
         return $articlesEntityList;
+    }
+
+    private function getArticlesLength(array $articles): int
+    {
+        $repeatedArticles = [];
+
+        $currentLength = 0;
+
+        foreach ($articles as $article) {
+            $code = $article['codigo'];
+            if (!in_array($code, $repeatedArticles)) {
+                $repeatedArticles[] = $code;
+                $currentLength += 1;
+            }
+        }
+
+        return $currentLength;
     }
 
     private function deleteRepeatedArticles(array $articles): Generator
@@ -284,34 +332,41 @@ class ArticleProductRepository
 
     private function getProductId(ArticleProductEntity $articleEntity): string
     {
-        $sql = "SELECT virtuemart_product_id FROM frthv_virtuemart_products ";
-        $sql .= "WHERE product_sku = :code";
+        // $sql = "SELECT virtuemart_product_id FROM frthv_virtuemart_products ";
+        // $sql .= "WHERE product_sku = :code";
+
+        $sql = "SELECT id_product FROM admin_copia_dev_bdc.bc_product WHERE reference = :code";
 
         $query = $this->mysqlConnection->prepare($sql);
 
         $code = $articleEntity->getCode();
 
-        $query->bindValue(":code", $code, PDO::PARAM_INT);
+        $query->bindValue(":code", $code, PDO::PARAM_STR);
 
         $query->execute();
         $result = $query->fetchAll(PDO::FETCH_COLUMN, 0);
+
+        if (empty($result)) {
+            return '0';
+        }
+
         return $result[0];
     }
 
-    private function existRow(ArticleProductEntity $articleEntity): bool
-    {
-        $sql = "SELECT EXISTS(SELECT * FROM frthv_virtuemart_products ";
-        $sql .= "WHERE product_sku = :code )";
+    // private function existRow(ArticleProductEntity $articleEntity): bool
+    // {
+    //     $sql = "SELECT EXISTS(SELECT * FROM frthv_virtuemart_products ";
+    //     $sql .= "WHERE product_sku = :code )";
 
-        $query = $this->mysqlConnection->prepare($sql);
+    //     $query = $this->mysqlConnection->prepare($sql);
 
-        $code = $articleEntity->getCode();
+    //     $code = $articleEntity->getCode();
 
-        $query->bindValue(":code", $code, PDO::PARAM_INT);
+    //     $query->bindValue(":code", $code, PDO::PARAM_INT);
 
-        $query->execute();
-        $result = $query->fetchAll(PDO::FETCH_COLUMN, 0);
+    //     $query->execute();
+    //     $result = $query->fetchAll(PDO::FETCH_COLUMN, 0);
 
-        return !empty($result[0]);
-    }
+    //     return !empty($result[0]);
+    // }
 }

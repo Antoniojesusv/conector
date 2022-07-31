@@ -5,6 +5,7 @@ namespace App\Components;
 use App\Model\Synchronisation\SynchronisationService;
 use App\Repository\ArticleRepository;
 use Error;
+use Exception;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
@@ -49,10 +50,13 @@ class ImagesSynchronisationComponent
         try {
             $this->messageError = '';
             $this->showLogDisplay();
-            $this->synchronisationService->deleteTemporaryImages();
+            // $this->synchronisationService->deleteTemporaryImages();
             $this->synchronisationService->synchronise();
             $this->images = $this->articleRepository->getAll();
         } catch (Error $error) {
+            $this->hideLogDisplay();
+            $this->messageError = $error->getMessage();
+        } catch (Exception $error) {
             $this->hideLogDisplay();
             $this->messageError = $error->getMessage();
         }
