@@ -154,8 +154,14 @@
     "react/event-loop": {
         "version": "v1.3.0"
     },
+    "react/mysql": {
+        "version": "v0.5.6"
+    },
     "react/promise": {
         "version": "v2.9.0"
+    },
+    "react/promise-stream": {
+        "version": "v1.3.0"
     },
     "react/promise-timer": {
         "version": "v1.8.0"
