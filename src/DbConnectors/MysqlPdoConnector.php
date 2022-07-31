@@ -23,7 +23,8 @@ class MysqlPdoConnector extends PdoConnector
         try {
             $this->connection = new PDO($dsn, $user, $password, [
                 PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_TIMEOUT, 2
+                PDO::ATTR_TIMEOUT, 2,
+                PDO::ATTR_EMULATE_PREPARES, 1,
             ]);
         } catch (Exception $e) {
             $this->message = $e->getMessage();
