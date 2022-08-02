@@ -29,6 +29,9 @@ parameters:
     server.photos.path: '%env(SERVER_PHOTOS_PATH)%'
     server.eurowin.photos.path: '%env(SERVER_EUROWIN_PHOTOS_PATH)%'
     articles.progress.update: '%env(ARTICLES_UPDATE_PROGRESS)%'
+    articles.synchronised: '%env(ARTICLES_SYNCHRONISED)%'
+    total.articles: '%env(TOTAL_ARTICLES)%'
+    interval: '%env(INTERVAL)%'
 
     workdir: "%kernel.project_dir%"
     env.file: "%kernel.project_dir%/.env"

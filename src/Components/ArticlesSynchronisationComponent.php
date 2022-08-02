@@ -9,8 +9,9 @@ use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 use Error;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
-#[AsLiveComponent('articles_synchronisation')]
+#[AsLiveComponent('articles_synchronisation', csrf: false)]
 class ArticlesSynchronisationComponent
 {
     use DefaultActionTrait;
@@ -27,15 +28,34 @@ class ArticlesSynchronisationComponent
     #[LiveProp()]
     public array $articles = [];
 
+    #[LiveProp()]
+    public string $shopStore = '';
+
+    #[LiveProp()]
+    public string $totalArticles = '';
+
+    #[LiveProp()]
+    public string $synchronisedArticles = '';
+
     private ArticlesSynchronisationService $synchronisationService;
     private ArticleProductRepository $articleRepository;
+    private ContainerBagInterface $params;
 
     public function __construct(
         ArticlesSynchronisationService $synchronisationService,
-        ArticleProductRepository $articleRepository
+        ArticleProductRepository $articleRepository,
+        ContainerBagInterface $params
     ) {
         $this->synchronisationService = $synchronisationService;
         $this->articleRepository = $articleRepository;
+        $this->params = $params;
+    }
+
+    public function mount()
+    {
+        $this->shopStore = $this->params->get('shop.store');
+        $this->totalArticles = $this->articleRepository->getTotalArticles();
+        $this->synchronisedArticles = $this->articleRepository->getSynchronisationArticles();
     }
 
     #[LiveAction]
@@ -47,6 +67,9 @@ class ArticlesSynchronisationComponent
             $this->showLogDisplay();
             $this->synchronisationService->synchronise();
             $this->articles = $this->articleRepository->getAll();
+            $this->shopStore = $this->params->get('shop.store');
+            $this->totalArticles = $this->articleRepository->getTotalArticles();
+            $this->synchronisedArticles = $this->articleRepository->getSynchronisationArticles();
         } catch (Error $error) {
             // $this->hideProgressVisibility();
             $this->hideLogDisplay();
