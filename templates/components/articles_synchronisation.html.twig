@@ -10,6 +10,18 @@
         <div class="composite-card__body">
             <div class="server-card__list">
                 <span class="server-card__item synchronisation-card__folder">Nota: <b class="server-card__item-value">Los productos corresponse a la tabla de articulos dentro de Eurowin</b></span>
+                <div class="server-card__item-container">
+                    <span class="server-card__item synchronisation-card__folder synchronisation-info-articles">Almacen: </span>
+                    <b class="server-card__item-value">{{ shopStore }}</b>
+                </div>
+                <div class="server-card__item-container">
+                    <span class="server-card__item synchronisation-card__folder synchronisation-info-articles">Total de articulos: </span>
+                    <b class="server-card__item-value">{{ totalArticles }}</b>
+                </div>
+                <div class="server-card__item-container">
+                    <span class="server-card__item synchronisation-card__folder synchronisation-info-articles">Articulos sincronizados: </span>
+                    <b class="server-card__item-value">{{ synchronisedArticles }}</b>
+                </div>
                 {% if messageError is not empty %}
                     <span class="server-card__item live-log__error-item">Error: <b class="server-card__item-value live-log__item-value-error">{{ messageError }}</b></span>
                 {% endif %}
