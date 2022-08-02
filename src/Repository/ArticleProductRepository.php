@@ -15,7 +15,10 @@ class ArticleProductRepository
     private PDO $connection;
     private PDO $mysqlConnection;
     private int $length = 0;
+    private int $interval = 2000;
+    private int $synchronisedArticles = 0;
     private float $currentPercentage = 0;
+    private string $shopStore;
 
     public function __construct(
         PdoFactoryI $sqlPdoFactory,
@@ -26,6 +29,8 @@ class ArticleProductRepository
         $this->mysqlPdoFactory = $mysqlPdoFactory;
         $this->params = $params;
         $this->from = 'articulo';
+        $this->synchronisedArticles = $this->getArticleSynchronisedNumber();
+        $this->shopStore = $this->params->get('shop.store');
         $sqlServerPdoConnector = $this->getPdoConnection();
         $sqlServerPdoConnector->hasConnection() ? $sqlServerPdoConnector->reconnect() : $sqlServerPdoConnector->connect();
         $this->connection = $sqlServerPdoConnector->getConnection();
@@ -95,42 +100,63 @@ class ArticleProductRepository
 
         $currentLength = 0;
 
+        $maximumRange = $this->calculateMaximumRange();
+
+        if ($maximumRange >= $this->length) {
+            $this->interval = $this->calculateDifference();
+        }
+
         foreach ($entityList as $key => $article) {
-            if ($currentLength === 2000) {
+            if ($this->isWithinInterval($currentLength)) {
+                // if ($currentLength === 2000) {
+                //     break;
+                // }
+                // $currentKey = ($key + 1);
+
+                // $this->currentPercentage = $this->calculateCurrentPertange($currentKey);
+
+                $productId = $this->getProductId($article);
+
+                // $this->existRow($article);
+            
+                if ($productId !== '0') {
+                    // $code = $article->getCode();
+                    $final = $article->getFinal();
+                    $productPublished = $this->isProductPublished($article);
+                    $productId = $this->getProductId($article);
+                    $pvp = $article->getPvp();
+                    $queryStock->execute();
+                    // $queryPrice->execute();
+                    // $queryShopPrice->execute();
+                    $data = $article->toArray();
+                    $data['published'] = $productPublished;
+                    $data['updated'] = true;
+                } else {
+                    $data = $article->toArray();
+                    $data['published'] = false;
+                    $data['updated'] = false;
+                    $code = $article->getCode();
+                    $data['error'] = "The code $code does not exist";
+                }
+    
+                $this->addToJsonLog($data);
+            }
+
+            if ($currentLength > $maximumRange) {
                 break;
             }
-            // $currentKey = ($key + 1);
-
-            // $this->currentPercentage = $this->calculateCurrentPertange($currentKey);
-
-            $productId = $this->getProductId($article);
-
-            // $this->existRow($article);
-            
-            if ($productId !== '0') {
-                // $code = $article->getCode();
-                $final = $article->getFinal();
-                $productPublished = $this->isProductPublished($article);
-                $productId = $this->getProductId($article);
-                $pvp = $article->getPvp();
-                $queryStock->execute();
-                // $queryPrice->execute();
-                // $queryShopPrice->execute();
-                $data = $article->toArray();
-                $data['published'] = $productPublished;
-                $data['updated'] = true;
-            } else {
-                $data = $article->toArray();
-                $data['published'] = false;
-                $data['updated'] = false;
-                $code = $article->getCode();
-                $data['error'] = "The code $code does not exist";
-            }
-    
-            $this->addToJsonLog($data);
 
             $currentLength++;
         }
+
+        $this->synchronisedArticles = $this->synchronisedArticles + $this->interval;
+
+        if ($maximumRange >= $this->length) {
+            $this->resetSynchronisedArticles();
+        }
+
+        $this->saveSynchronisedArticles();
+        $this->saveTotalArticles();
     }
 
     public function isProductPublished(ArticleProductEntity $articleEntity): bool
@@ -208,6 +234,31 @@ class ArticleProductRepository
 
         $articlesEntityList = $this->mapToEntity($articles);
         return $articlesEntityList;
+    }
+
+    private function resetSynchronisedArticles(): void
+    {
+        $this->synchronisedArticles = 0;
+    }
+
+    private function getArticleSynchronisedNumber(): int
+    {
+        return intval($this->params->get("articles.synchronised"));
+    }
+
+    private function isWithinInterval(int $key): bool
+    {
+        return $key >= $this->synchronisedArticles && $key <= ($this->synchronisedArticles + $this->interval);
+    }
+
+    private function calculateMaximumRange(): int
+    {
+        return $this->synchronisedArticles + $this->interval;
+    }
+
+    private function calculateDifference(): int
+    {
+        return $this->length - $this->synchronisedArticles;
     }
 
     private function getArticlesLength(array $articles): int
@@ -351,6 +402,58 @@ class ArticleProductRepository
         }
 
         return $result[0];
+    }
+
+    public function saveSynchronisedArticles(int $value = null): void
+    {
+        $envFilePath = $this->params->get('env.file');
+        $envFile = file_get_contents($envFilePath);
+
+        $synchronisedArticles = $value;
+
+        if (is_null($value)) {
+            $synchronisedArticles = $this->synchronisedArticles;
+        }
+
+        $envFileReplaced = preg_replace('/ARTICLES_SYNCHRONISED=.*/', "ARTICLES_SYNCHRONISED=\"$synchronisedArticles\"", $envFile);
+
+        file_put_contents($envFilePath, $envFileReplaced);
+    }
+
+    public function saveTotalArticles(int $value = null): void
+    {
+        $envFilePath = $this->params->get('env.file');
+        $envFile = file_get_contents($envFilePath);
+
+        $totalArticles = $value;
+
+        if (is_null($value)) {
+            $totalArticles = $this->length;
+        }
+
+        $envFileReplaced = preg_replace('/TOTAL_ARTICLES=.*/', "TOTAL_ARTICLES=\"$totalArticles\"", $envFile);
+
+        file_put_contents($envFilePath, $envFileReplaced);
+    }
+
+    public function getTotalArticles(): string
+    {
+        $envFilePath = $this->params->get('env.file');
+        $envFile = file_get_contents($envFilePath);
+
+        preg_match('/TOTAL_ARTICLES="(.+)"/', $envFile, $matches);
+
+        return $matches[1];
+    }
+
+    public function getSynchronisationArticles(): string
+    {
+        $envFilePath = $this->params->get('env.file');
+        $envFile = file_get_contents($envFilePath);
+
+        preg_match('/ARTICLES_SYNCHRONISED="(.+)"/', $envFile, $matches);
+
+        return $matches[1];
     }
 
     // private function existRow(ArticleProductEntity $articleEntity): bool

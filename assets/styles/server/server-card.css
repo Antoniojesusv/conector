@@ -23,6 +23,11 @@
     flex-direction: column;
 }
 
+.server-card__item-container {
+    display: flex;
+    padding-top: 0.5rem;
+}
+
 .server-card__item {
     font-weight: bold;
     color: #8e8d93;
@@ -30,4 +35,9 @@
 
 .server-card__item-value {
     color: #3f6ad8
+}
+
+.synchronisation-info-articles {
+    margin-right: 0.3rem;
+    color: black;
 }
