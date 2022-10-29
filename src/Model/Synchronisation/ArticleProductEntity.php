@@ -15,6 +15,7 @@ class ArticleProductEntity
     private string $pvp;
     private string $rate;
     private string $final;
+    private ?string $S01Value;
 
     public function __construct(
         string $code,
@@ -26,6 +27,7 @@ class ArticleProductEntity
         string $pvp,
         string $rate,
         string $final,
+        ?string $S01Value = null,
     ) {
         $this->setCode($code);
         $this->setName($name);
@@ -36,6 +38,7 @@ class ArticleProductEntity
         $this->setPvp($pvp);
         $this->setRate($rate);
         $this->setFinal($final);
+        $this->setS01Value($S01Value);
     }
 
     public function getCode(): string
@@ -162,6 +165,16 @@ class ArticleProductEntity
         }
         
         $this->final = $final;
+    }
+    
+    public function getS01Value(): ?string
+    {
+        return $this->S01Value;
+    }
+
+    public function setS01Value(?string $S01Value): void
+    {
+        $this->S01Value = $S01Value;
     }
 
     public function toArray(): array
