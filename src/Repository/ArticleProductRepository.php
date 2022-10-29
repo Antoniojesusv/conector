@@ -124,6 +124,8 @@ class ArticleProductRepository
                 if ($productId !== '0') {
                     $code = $article->getCode();
                     $final = $article->getFinal();
+                    $S01value = $this->getS01Value($article);
+                    $article->setS01Value($S01value);
                     $productPublished = $this->isProductPublished($article);
                     $productId = $this->getProductId($article);
                     $pvp = $article->getPvp();
@@ -164,6 +166,8 @@ class ArticleProductRepository
     public function isProductPublished(ArticleProductEntity $articleEntity): bool
     {
         $low = $articleEntity->getLow();
+        $stock = (int) $articleEntity->getFinal();
+        $S01Value = $articleEntity->getS01Value();
         $internet = $articleEntity->getInternet();
         $pvp = (float) $articleEntity->getPvp();
         // $artCanon = $articleEntity->getArtCanon();
@@ -172,13 +176,25 @@ class ArticleProductRepository
             return false;
         }
 
-        if ($internet === '0') {
+        if ($stock <= 0) {
             return false;
         }
 
-        if ($pvp <= 0) {
-            return false;
+        if (!is_null($S01Value)) {
+            if ($S01Value === 'F') {
+                return false;
+            }
+
+            return true;
         }
+
+        // if ($internet === '0') {
+        //     return false;
+        // }
+
+        // if ($pvp <= 0) {
+        //     return false;
+        // }
 
         // if ($artCanon === '0') {
         //     return false;
@@ -404,6 +420,38 @@ class ArticleProductRepository
         }
 
         return $result[0];
+    }
+    
+    private function getS01Value(ArticleProductEntity $articleEntity): ?string
+    {
+        $sql = "SELECT VALOR FROM multicam ";
+        $sql .= "WHERE CODIGO = :code ";
+        $sql .= "AND CAMPO = :campo";
+
+        $query = $this->connection->prepare($sql);
+
+        $code = $articleEntity->getCode();
+        $campo = 'S01';
+
+        $query->bindParam(":code", $code, PDO::PARAM_STR);
+        $query->bindParam(":campo", $campo, PDO::PARAM_STR);
+
+        $query->execute();
+        $result = $query->fetchAll(PDO::FETCH_COLUMN, 0);
+
+        if (empty($result)) {
+            return null;
+        }
+
+        preg_match('/[TF]/', $result[0], $matches);
+
+        if (empty($matches)) {
+            return null;
+        }
+
+        $S01Value = $matches[0];
+
+        return $S01Value;
     }
 
     public function saveSynchronisedArticles(int $value = null): void
