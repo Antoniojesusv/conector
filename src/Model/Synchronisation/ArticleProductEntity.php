@@ -15,7 +15,9 @@ class ArticleProductEntity
     private string $pvp;
     private string $rate;
     private string $final;
+    private int $productId;
     private ?string $S01Value;
+    private array $shopperGroups;
 
     public function __construct(
         string $code,
@@ -27,7 +29,9 @@ class ArticleProductEntity
         string $pvp,
         string $rate,
         string $final,
-        ?string $S01Value = null,
+        int $productId = 0,
+        array $shopperGroups = [],
+        ?string $S01Value = null
     ) {
         $this->setCode($code);
         $this->setName($name);
@@ -38,6 +42,8 @@ class ArticleProductEntity
         $this->setPvp($pvp);
         $this->setRate($rate);
         $this->setFinal($final);
+        $this->setProductId($productId);
+        $this->setShopperGroups($shopperGroups);
         $this->setS01Value($S01Value);
     }
 
@@ -166,6 +172,26 @@ class ArticleProductEntity
         
         $this->final = $final;
     }
+
+    public function getProductId(): int
+    {
+        return $this->productId;
+    }
+
+    public function setProductId(?int $productId): void
+    {
+        $this->productId = $productId;
+    }
+
+    public function getShopperGroups(): array
+    {
+        return $this->shopperGroups;
+    }
+
+    public function setShopperGroups(array $shopperGroups): void
+    {
+        $this->shopperGroups = $shopperGroups;
+    }
     
     public function getS01Value(): ?string
     {
@@ -188,7 +214,9 @@ class ArticleProductEntity
             'artCanon' => $this->artCanon,
             'pvp' => $this->pvp,
             'rate' => $this->rate,
-            'final' => $this->final
+            'final' => $this->final,
+            'productId' => $this->productId,
+            'S01Value' => $this->S01Value
         ];
     }
 

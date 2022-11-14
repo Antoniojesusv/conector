@@ -16,7 +16,7 @@ class ShopType extends AbstractType
     {
         $builder
             ->add('name', TextType::class)
-            ->add('rate', NumberType::class)
+            ->add('rate', TextType::class)
             ->add('store', ChoiceType::class, [
                 'choices'  => $options['stores'],
             ])

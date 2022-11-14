@@ -11,6 +11,10 @@
             <div class="server-card__list">
                 <span class="server-card__item synchronisation-card__folder">Nota: <b class="server-card__item-value">Los productos corresponse a la tabla de articulos dentro de Eurowin</b></span>
                 <div class="server-card__item-container">
+                    <span class="server-card__item synchronisation-card__folder synchronisation-info-articles">Tarifa: </span>
+                    <b class="server-card__item-value">{{ rate }}</b>
+                </div>
+                <div class="server-card__item-container">
                     <span class="server-card__item synchronisation-card__folder synchronisation-info-articles">Almacen: </span>
                     <b class="server-card__item-value">{{ shopStore }}</b>
                 </div>
@@ -67,7 +71,7 @@
                                     {% if article.published == true %}
                                         <td class="table__cell table-log_cell"><span class="badge badge-success">Publicado</span></td>
                                     {% else %}
-                                        <td class="table__cell table-log_cell"><span class="badge badge-success">No Publicado</span></td>
+                                        <td class="table__cell table-log_cell"><span class="badge badge-error">No Publicado</span></td>
                                     {% endif %}
                                     {# <td class="table__cell table-log_cell">{{ article.rate }}</td> #}
                                     <td class="table__cell table-log_cell">{{ article.final }}</td>

@@ -29,6 +29,9 @@ class ArticlesSynchronisationComponent
     public array $articles = [];
 
     #[LiveProp()]
+    public string $rate = '';
+
+    #[LiveProp()]
     public string $shopStore = '';
 
     #[LiveProp()]
@@ -53,6 +56,7 @@ class ArticlesSynchronisationComponent
 
     public function mount()
     {
+        $this->rate = $this->params->get('shop.rate');
         $this->shopStore = $this->params->get('shop.store');
         $this->totalArticles = $this->articleRepository->getTotalArticles();
         $this->synchronisedArticles = $this->articleRepository->getSynchronisationArticles();
