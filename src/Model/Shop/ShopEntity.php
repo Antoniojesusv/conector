@@ -7,7 +7,7 @@ use Exception;
 class ShopEntity
 {
     private string $name;
-    private int $rate;
+    private string $rate;
     private string $store;
 
     public function __construct(
@@ -34,12 +34,12 @@ class ShopEntity
         $this->name = $name;
     }
 
-    public function getRate(): int
+    public function getRate(): string
     {
         return $this->rate;
     }
 
-    public function setRate(int $rate): void
+    public function setRate(string $rate): void
     {
         $this->rate = $rate;
     }

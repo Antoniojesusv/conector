@@ -15,10 +15,9 @@ class ShopModel
     
     /**
      * @Assert\NotBlank
-     * @Assert\PositiveOrZero
-     * @Assert\Type("integer")
+     * @Assert\Type("string")
      */
-    private int $rate;
+    private string $rate;
 
     private string $store;
 
@@ -37,7 +36,7 @@ class ShopModel
         return $this->rate;
     }
 
-    public function setRate(int $rate = 0): void
+    public function setRate(string $rate = '0'): void
     {
         $this->rate = $rate;
     }
