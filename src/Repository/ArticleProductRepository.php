@@ -19,6 +19,10 @@ class ArticleProductRepository
     private int $synchronisedArticles = 0;
     private float $currentPercentage = 0;
     private string $shopStore;
+    const SHOPPER_GROUP_MAPPED_TO_RATE = [
+        0 => 01,
+        5 => 88
+    ];
 
     public function __construct(
         PdoFactoryI $sqlPdoFactory,
@@ -62,9 +66,9 @@ class ArticleProductRepository
         $sqlStock .= "SET product_in_stock = :final, published = :productPublished ";
         $sqlStock .= "WHERE product_sku = :code";
 
-        $sqlPrice = "UPDATE frthv_virtuemart_product_prices ";
-        $sqlPrice .= "SET product_price = :price ";
-        $sqlPrice .= "WHERE virtuemart_product_id = :productId";
+        // $sqlPrice = "UPDATE frthv_virtuemart_product_prices ";
+        // $sqlPrice .= "SET product_price = :price ";
+        // $sqlPrice .= "WHERE virtuemart_product_id = :productId";
 
         // $sqlStock = "UPDATE bc_stock_available ";
         // $sqlStock .= "SET quantity = :final ";
@@ -79,23 +83,23 @@ class ArticleProductRepository
         // $sqlProductShopPrice .= "WHERE id_product = :productId;";
 
         $queryStock = $this->mysqlConnection->prepare($sqlStock);
-        $queryPrice = $this->mysqlConnection->prepare($sqlPrice);
+        // $queryPrice = $this->mysqlConnection->prepare($sqlPrice);
         // $queryPrice = $this->mysqlConnection->prepare($sqlProductPrice);
         // $queryShopPrice = $this->mysqlConnection->prepare($sqlProductShopPrice);
 
         $code = null;
         $final = null;
         $productPublished = null;
-        $pvp = null;
-        $productId = null;
+        // $pvp = null;
+        // $productId = null;
 
         $queryStock->bindParam(":code", $code, PDO::PARAM_INT);
         $queryStock->bindParam(":final", $final, PDO::PARAM_STR);
         $queryStock->bindParam(":productPublished", $productPublished, PDO::PARAM_BOOL);
         // $queryStock->bindParam(":productId", $productId, PDO::PARAM_STR);
-        $queryPrice->bindParam(":price", $pvp, PDO::PARAM_STR);
+        // $queryPrice->bindParam(":price", $pvp, PDO::PARAM_STR);
         // $queryPrice->bindParam(":productPublished", $productPublished, PDO::PARAM_BOOL);
-        $queryPrice->bindParam(":productId", $productId, PDO::PARAM_STR);
+        // $queryPrice->bindParam(":productId", $productId, PDO::PARAM_STR);
         // $queryShopPrice->bindParam(":price", $pvp, PDO::PARAM_STR);
         // $queryShopPrice->bindParam(":productPublished", $productPublished, PDO::PARAM_BOOL);
         // $queryShopPrice->bindParam(":productId", $productId, PDO::PARAM_STR);
@@ -118,6 +122,7 @@ class ArticleProductRepository
                 // $this->currentPercentage = $this->calculateCurrentPertange($currentKey);
 
                 $productId = $this->getProductId($article);
+                $article->setProductId($productId);
 
                 // $this->existRow($article);
             
@@ -127,10 +132,14 @@ class ArticleProductRepository
                     $S01value = $this->getS01Value($article);
                     $article->setS01Value($S01value);
                     $productPublished = $this->isProductPublished($article);
-                    $productId = $this->getProductId($article);
-                    $pvp = $article->getPvp();
+                    $productId = $article->getProductId($article);
+                    $shopperGroup = $this->getShopperGroupById($article);
+                    $article->setShopperGroups($shopperGroup);
+                    // $pvp = $article->getPvp();
+                    $this->processShopperGroups($article);
                     $queryStock->execute();
-                    $queryPrice->execute();
+                    $this->updateProductPrices($article);
+                    // $queryPrice->execute();
                     // $queryShopPrice->execute();
                     $data = $article->toArray();
                     $data['published'] = $productPublished;
@@ -161,6 +170,123 @@ class ArticleProductRepository
 
         $this->saveSynchronisedArticles();
         $this->saveTotalArticles();
+    }
+
+    private function updateProductPrices(ArticleProductEntity $articleEntity): void
+    {
+        $sqlPrice = "UPDATE frthv_virtuemart_product_prices ";
+        $sqlPrice .= "SET product_price = :price ";
+        $sqlPrice .= "WHERE virtuemart_product_id = :productId ";
+        $sqlPrice .= "AND virtuemart_shoppergroup_id = '0'";
+
+        $rate = (int) $articleEntity->getRate();
+        $shopperGroup = $this->getShopperGroupByRate($rate);
+        $pvp = $articleEntity->getPvp();
+        $productId = $articleEntity->getProductId();
+
+        $queryPrice = $this->mysqlConnection->prepare($sqlPrice);
+
+        if (!is_null($shopperGroup)) {
+            $sqlPrice = "UPDATE frthv_virtuemart_product_prices ";
+            $sqlPrice .= "SET product_price = :price ";
+            $sqlPrice .= "WHERE virtuemart_product_id = :productId ";
+            $sqlPrice .= "AND virtuemart_shoppergroup_id = :shopperGroup";
+
+            $queryPrice = $this->mysqlConnection->prepare($sqlPrice);
+
+            $queryPrice->bindParam(":shopperGroup", $shopperGroup, PDO::PARAM_INT);
+        }
+
+        $queryPrice->bindParam(":price", $pvp, PDO::PARAM_STR);
+        $queryPrice->bindParam(":productId", $productId, PDO::PARAM_STR);
+
+        $queryPrice->execute();
+    }
+
+    private function processShopperGroups(ArticleProductEntity $articleEntity): void
+    {
+        $rate = (int) $articleEntity->getRate();
+        $shopperGroups = $articleEntity->getShopperGroups();
+
+        $shopperGroup = $this->getShopperGroupByRate($rate);
+
+        if (!$this->existShopperGroup($shopperGroup, $shopperGroups)) {
+            $this->createShopperGroup($articleEntity, $shopperGroup);
+        }
+    }
+
+    private function createShopperGroup(ArticleProductEntity $articleEntity, int $shopperGroup): void
+    {
+        $sql = "INSERT INTO bodecall2107.frthv_virtuemart_product_prices ";
+        $sql .= "(virtuemart_product_id, virtuemart_shoppergroup_id, product_price, override, product_override_price, product_tax_id, product_discount_id, product_currency, product_price_publish_up, product_price_publish_down, price_quantity_start, price_quantity_end, created_on, created_by, modified_on, modified_by, locked_on, locked_by) ";
+        $sql .= "VALUES(:productId, :shopperGroup, :productPrice, :override, :productOverridePrice, :productTaxId, :productDiscountId, :productCurrency, :defaultDatetime, :defaultDatetime, :priceQuantityStart, :priceQuantityEnd, NOW(), :createdBy, NOW(), :modifiedBy, NOW(), :lockedBy)";
+
+        $row = $this->getProductPricesRow($articleEntity);
+
+        $query = $this->mysqlConnection->prepare($sql);
+
+        $productId = $articleEntity->getProductId();
+        $productPrice = $articleEntity->getPvp();
+        $override = !($row['override'] == '0');
+        $productOverridePrice = $row['product_override_price'];
+        $productTaxId = $row['product_tax_id'];
+        $productDiscountId = $row['product_discount_id'];
+        $productCurrency = $row['product_currency'];
+        $defaultDatetime = '0000-00-00 00:00:00';
+        $priceQuantityStart = $row['price_quantity_start'];
+        $priceQuantityEnd = $row['price_quantity_end'];
+        $createdBy = $row['created_by'];
+        $modifiedBy = $row['modified_by'];
+        $lockedBy = $row['locked_by'];
+
+        $query->bindParam(":productId", $productId, PDO::PARAM_INT);
+        $query->bindParam(":shopperGroup", $shopperGroup, PDO::PARAM_INT);
+        $query->bindParam(":productPrice", $productPrice, PDO::PARAM_STR);
+        $query->bindParam(":override", $override, PDO::PARAM_BOOL);
+        $query->bindParam(":productOverridePrice", $productOverridePrice, PDO::PARAM_STR);
+        $query->bindParam(":productTaxId", $productTaxId, PDO::PARAM_INT);
+        $query->bindParam(":productDiscountId", $productDiscountId, PDO::PARAM_INT);
+        $query->bindParam(":productCurrency", $productCurrency, PDO::PARAM_INT);
+        $query->bindParam(":defaultDatetime", $defaultDatetime, PDO::PARAM_STR);
+        $query->bindParam(":priceQuantityStart", $priceQuantityStart, PDO::PARAM_INT);
+        $query->bindParam(":priceQuantityEnd", $priceQuantityEnd, PDO::PARAM_INT);
+        $query->bindParam(":createdBy", $createdBy, PDO::PARAM_INT);
+        $query->bindParam(":modifiedBy", $modifiedBy, PDO::PARAM_INT);
+        $query->bindParam(":lockedBy", $lockedBy, PDO::PARAM_INT);
+
+        $query->execute();
+    }
+
+    private function getProductPricesRow(ArticleProductEntity $articleEntity): array
+    {
+        $sql = "SELECT * FROM frthv_virtuemart_product_prices p WHERE virtuemart_product_id = :productId";
+
+        $query = $this->mysqlConnection->prepare($sql);
+
+        $productId = $articleEntity->getProductId();
+
+        $query->bindValue(":productId", $productId, PDO::PARAM_STR);
+        $query->execute();
+
+        return $query->fetchAll()[0];
+    }
+
+    private function existShopperGroup(?int $shopperGroup, array $shopperGroups): bool
+    {
+        if (is_null($shopperGroup)) {
+            return true;
+        }
+
+        return in_array($shopperGroup, $shopperGroups);
+    }
+
+    private function getShopperGroupByRate(int $rate): ?int
+    {
+        if (in_array($rate, $this::SHOPPER_GROUP_MAPPED_TO_RATE)) {
+            return array_search($rate, $this::SHOPPER_GROUP_MAPPED_TO_RATE);
+        }
+
+        return null;
     }
 
     public function isProductPublished(ArticleProductEntity $articleEntity): bool
@@ -254,6 +380,57 @@ class ArticleProductRepository
         return $articlesEntityList;
     }
 
+    private function getArticlesLengthToShow(
+        string $rate,
+        string $store,
+        string $company
+    ): int {
+        if ($store === 'All') {
+            $sql = "SELECT articulo.codigo, articulo.nombre, articulo.imagen, ";
+            $sql .= "articulo.baja, articulo.internet, articulo.art_canon, ";
+            $sql .= "pvp.pvp, pvp.tarifa, ";
+            $sql .= "(SELECT SUM(FINAL) TOTALSTOCK FROM stocks2 WHERE articulo = articulo.codigo GROUP BY ARTICULO) AS final ";
+            $sql .= "FROM " . $this->from . " ";
+            $sql .= "INNER JOIN pvp ON (articulo.codigo = pvp.articulo) ";
+            $sql .= "INNER JOIN stocks2 ON (articulo.codigo = stocks2.articulo) ";
+            $sql .= "WHERE pvp.tarifa = :rate ";
+            $sql .= "AND stocks2.empresa = :company";
+        } else {
+            $sql = "SELECT articulo.codigo, articulo.nombre, articulo.imagen, ";
+            $sql .= "articulo.baja, articulo.internet, articulo.art_canon, ";
+            $sql .= "pvp.pvp, pvp.tarifa, stocks2.final ";
+            $sql .= "FROM " . $this->from . " ";
+            $sql .= "INNER JOIN pvp ON (articulo.codigo = pvp.articulo) ";
+            $sql .= "INNER JOIN stocks2 ON (articulo.codigo = stocks2.articulo) ";
+            $sql .= "WHERE pvp.tarifa = :rate ";
+            $sql .= "AND stocks2.almacen = :store ";
+            $sql .= "AND stocks2.empresa = :company";
+        }
+
+        $query = $this->connection->prepare($sql);
+
+        $query->bindParam(":rate", $rate, PDO::PARAM_STR);
+
+        if ($store !== 'All') {
+            $query->bindParam(":store", $store, PDO::PARAM_STR);
+        }
+
+        $query->bindParam(":company", $company, PDO::PARAM_STR);
+
+        $query->execute();
+
+        $articles = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        if ($store === 'All') {
+            $articles = $this->deleteRepeatedArticles($articles);
+            return $this->getArticlesLengthGivenaGenerator($articles);
+        }
+
+        return $this->getArticlesLength($articles);
+
+        // return $this->getArticlesLengthGivenaGenerator($articles);
+    }
+
     private function resetSynchronisedArticles(): void
     {
         $this->synchronisedArticles = 0;
@@ -280,6 +457,23 @@ class ArticleProductRepository
     }
 
     private function getArticlesLength(array $articles): int
+    {
+        $repeatedArticles = [];
+
+        $currentLength = 0;
+
+        foreach ($articles as $article) {
+            $code = $article['codigo'];
+            if (!in_array($code, $repeatedArticles)) {
+                $repeatedArticles[] = $code;
+                $currentLength += 1;
+            }
+        }
+
+        return $currentLength;
+    }
+
+    private function getArticlesLengthGivenaGenerator(Generator $articles): int
     {
         $repeatedArticles = [];
 
@@ -421,6 +615,27 @@ class ArticleProductRepository
 
         return $result[0];
     }
+
+    private function getShopperGroupById(ArticleProductEntity $articleEntity): ?array
+    {
+        $sql = "SELECT p.virtuemart_shoppergroup_id FROM frthv_virtuemart_product_prices p ";
+        $sql .= "WHERE virtuemart_product_id = :productId";
+
+        $query = $this->mysqlConnection->prepare($sql);
+
+        $code = $articleEntity->getProductId();
+
+        $query->bindValue(":productId", $code, PDO::PARAM_STR);
+
+        $query->execute();
+        $result = $query->fetchAll(PDO::FETCH_COLUMN, 0);
+
+        if (empty($result)) {
+            return [];
+        }
+
+        return $result;
+    }
     
     private function getS01Value(ArticleProductEntity $articleEntity): ?string
     {
@@ -486,14 +701,22 @@ class ArticleProductRepository
         file_put_contents($envFilePath, $envFileReplaced);
     }
 
-    public function getTotalArticles(): string
+    public function getTotalArticles(): int
     {
-        $envFilePath = $this->params->get('env.file');
-        $envFile = file_get_contents($envFilePath);
+        $rate = $this->params->get('shop.rate');
+        $store = $this->params->get('shop.store');
+        $company = '01';
 
-        preg_match('/TOTAL_ARTICLES="(.+)"/', $envFile, $matches);
+        // $articlesGenerator = $this->getAllByRateStockStoreAndCompany($rate, $store, $company);
 
-        return $matches[1];
+        return $this->getArticlesLengthToShow($rate, $store, $company);
+
+        // $envFilePath = $this->params->get('env.file');
+        // $envFile = file_get_contents($envFilePath);
+
+        // preg_match('/TOTAL_ARTICLES="(.+)"/', $envFile, $matches);
+
+        // return $matches[1];
     }
 
     public function getSynchronisationArticles(): string
@@ -505,6 +728,8 @@ class ArticleProductRepository
 
         return $matches[1];
     }
+
+    // private function
 
     // private function existRow(ArticleProductEntity $articleEntity): bool
     // {
