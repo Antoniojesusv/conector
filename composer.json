@@ -105,6 +105,7 @@
         "build:dev" : "npm run watch",
         "build:prod": "docker compose up --build -d",
         "run:dev": "docker compose -f docker-compose.dev.yml up --build -d",
+        "stop": "docker compose -f docker-compose.dev.yml down",
         "deploy:dev": [
             "Composer\\Config::disableProcessTimeout",
             "@run:dev",
