@@ -66,6 +66,16 @@ class ArticleProductRepository
         $sqlStock .= "SET product_in_stock = :final, published = :productPublished ";
         $sqlStock .= "WHERE product_sku = :code";
 
+        $sqlPrice = "UPDATE frthv_virtuemart_product_prices ";
+        $sqlPrice .= "SET product_price = :price ";
+        $sqlPrice .= "WHERE virtuemart_product_id = :productId ";
+        $sqlPrice .= "AND virtuemart_shoppergroup_id = '0'";
+
+        $sqlPriceShopperGroup = "UPDATE frthv_virtuemart_product_prices ";
+        $sqlPriceShopperGroup .= "SET product_price = :price ";
+        $sqlPriceShopperGroup .= "WHERE virtuemart_product_id = :productId ";
+        $sqlPriceShopperGroup .= "AND virtuemart_shoppergroup_id = :shopperGroup";
+
         // $sqlPrice = "UPDATE frthv_virtuemart_product_prices ";
         // $sqlPrice .= "SET product_price = :price ";
         // $sqlPrice .= "WHERE virtuemart_product_id = :productId";
@@ -83,6 +93,8 @@ class ArticleProductRepository
         // $sqlProductShopPrice .= "WHERE id_product = :productId;";
 
         $queryStock = $this->mysqlConnection->prepare($sqlStock);
+        $queryPrice = $this->mysqlConnection->prepare($sqlPrice);
+        $queryPriceShopperGroup = $this->mysqlConnection->prepare($sqlPriceShopperGroup);
         // $queryPrice = $this->mysqlConnection->prepare($sqlPrice);
         // $queryPrice = $this->mysqlConnection->prepare($sqlProductPrice);
         // $queryShopPrice = $this->mysqlConnection->prepare($sqlProductShopPrice);
@@ -138,7 +150,7 @@ class ArticleProductRepository
                     // $pvp = $article->getPvp();
                     $this->processShopperGroups($article);
                     $queryStock->execute();
-                    $this->updateProductPrices($article);
+                    $this->updateProductPrices($article, $queryPrice, $queryPriceShopperGroup);
                     // $queryPrice->execute();
                     // $queryShopPrice->execute();
                     $data = $article->toArray();
@@ -172,35 +184,36 @@ class ArticleProductRepository
         $this->saveTotalArticles();
     }
 
-    private function updateProductPrices(ArticleProductEntity $articleEntity): void
+    private function updateProductPrices(ArticleProductEntity $articleEntity, $queryPrice, $queryPriceShopperGroup): void
     {
-        $sqlPrice = "UPDATE frthv_virtuemart_product_prices ";
-        $sqlPrice .= "SET product_price = :price ";
-        $sqlPrice .= "WHERE virtuemart_product_id = :productId ";
-        $sqlPrice .= "AND virtuemart_shoppergroup_id = '0'";
-
         $rate = (int) $articleEntity->getRate();
         $shopperGroup = $this->getShopperGroupByRate($rate);
         $pvp = $articleEntity->getPvp();
         $productId = $articleEntity->getProductId();
 
-        $queryPrice = $this->mysqlConnection->prepare($sqlPrice);
+        if (is_null($shopperGroup)) {
+            $queryPrice->bindParam(":price", $pvp, PDO::PARAM_STR);
+            $queryPrice->bindParam(":productId", $productId, PDO::PARAM_STR);
 
-        if (!is_null($shopperGroup)) {
-            $sqlPrice = "UPDATE frthv_virtuemart_product_prices ";
-            $sqlPrice .= "SET product_price = :price ";
-            $sqlPrice .= "WHERE virtuemart_product_id = :productId ";
-            $sqlPrice .= "AND virtuemart_shoppergroup_id = :shopperGroup";
+            $queryPrice->execute();
+        } else {
+            $queryPriceShopperGroup->bindParam(":price", $pvp, PDO::PARAM_STR);
+            $queryPriceShopperGroup->bindParam(":productId", $productId, PDO::PARAM_STR);
+            $queryPriceShopperGroup->bindParam(":shopperGroup", $shopperGroup, PDO::PARAM_INT);
 
-            $queryPrice = $this->mysqlConnection->prepare($sqlPrice);
-
-            $queryPrice->bindParam(":shopperGroup", $shopperGroup, PDO::PARAM_INT);
+            $queryPriceShopperGroup->execute();
         }
 
-        $queryPrice->bindParam(":price", $pvp, PDO::PARAM_STR);
-        $queryPrice->bindParam(":productId", $productId, PDO::PARAM_STR);
+        // $queryPrice = $this->mysqlConnection->prepare($sqlPrice);
 
-        $queryPrice->execute();
+        // $queryPrice->bindParam(":price", $pvp, PDO::PARAM_STR);
+        // $queryPrice->bindParam(":productId", $productId, PDO::PARAM_STR);
+
+        // if (!is_null($shopperGroup)) {
+        //     $queryPrice->bindParam(":shopperGroup", $shopperGroup, PDO::PARAM_INT);
+        // }
+
+        // $queryPrice->execute();
     }
 
     private function processShopperGroups(ArticleProductEntity $articleEntity): void
