@@ -23,13 +23,14 @@ class MysqlPdoConnector extends PdoConnector
         try {
             $this->connection = new PDO($dsn, $user, $password, [
                 PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_TIMEOUT, 2
+                PDO::ATTR_TIMEOUT, 2,
+                PDO::ATTR_EMULATE_PREPARES, false
             ]);
 
-            $emulate_prepares_below_version = '5.1.17';
-            $serverversion = $this->connection->getAttribute(PDO::ATTR_SERVER_VERSION);
-            $emulate_prepares = (version_compare($serverversion, $emulate_prepares_below_version, '<'));
-            $this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, $emulate_prepares);
+            // $emulate_prepares_below_version = '5.1.17';
+            // $serverversion = $this->connection->getAttribute(PDO::ATTR_SERVER_VERSION);
+            // $emulate_prepares = (version_compare($serverversion, $emulate_prepares_below_version, '<'));
+            // $this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, $emulate_prepares);
         } catch (Exception $e) {
             $this->message = $e->getMessage();
             $this->connection = null;
