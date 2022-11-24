@@ -230,9 +230,9 @@ class ArticleProductRepository
 
     private function createShopperGroup(ArticleProductEntity $articleEntity, int $shopperGroup): void
     {
-        $sql = "INSERT INTO bodecall2107.frthv_virtuemart_product_prices ";
-        $sql .= "(virtuemart_product_id, virtuemart_shoppergroup_id, product_price, override, product_override_price, product_tax_id, product_discount_id, product_currency, product_price_publish_up, product_price_publish_down, price_quantity_start, price_quantity_end, created_on, created_by, modified_on, modified_by, locked_on, locked_by) ";
-        $sql .= "VALUES(:productId, :shopperGroup, :productPrice, :override, :productOverridePrice, :productTaxId, :productDiscountId, :productCurrency, :defaultDatetime, :defaultDatetime, :priceQuantityStart, :priceQuantityEnd, NOW(), :createdBy, NOW(), :modifiedBy, NOW(), :lockedBy)";
+        $sql = "INSERT INTO frthv_virtuemart_product_prices ";
+        $sql .= "(virtuemart_product_id, virtuemart_shoppergroup_id, product_price, override, product_override_price, product_tax_id, product_discount_id, product_currency) ";
+        $sql .= "VALUES(:productId, :shopperGroup, :productPrice, :override, :productOverridePrice, :productTaxId, :productDiscountId, :productCurrency)";
 
         $row = $this->getProductPricesRow($articleEntity);
 
@@ -245,29 +245,41 @@ class ArticleProductRepository
         $productTaxId = $row['product_tax_id'];
         $productDiscountId = $row['product_discount_id'];
         $productCurrency = $row['product_currency'];
-        $defaultDatetime = '0000-00-00 00:00:00';
-        $priceQuantityStart = $row['price_quantity_start'];
-        $priceQuantityEnd = $row['price_quantity_end'];
-        $createdBy = $row['created_by'];
-        $modifiedBy = $row['modified_by'];
-        $lockedBy = $row['locked_by'];
 
-        $query->bindParam(":productId", $productId, PDO::PARAM_INT);
-        $query->bindParam(":shopperGroup", $shopperGroup, PDO::PARAM_INT);
-        $query->bindParam(":productPrice", $productPrice, PDO::PARAM_STR);
-        $query->bindParam(":override", $override, PDO::PARAM_BOOL);
-        $query->bindParam(":productOverridePrice", $productOverridePrice, PDO::PARAM_STR);
-        $query->bindParam(":productTaxId", $productTaxId, PDO::PARAM_INT);
-        $query->bindParam(":productDiscountId", $productDiscountId, PDO::PARAM_INT);
-        $query->bindParam(":productCurrency", $productCurrency, PDO::PARAM_INT);
-        $query->bindParam(":defaultDatetime", $defaultDatetime, PDO::PARAM_STR);
-        $query->bindParam(":priceQuantityStart", $priceQuantityStart, PDO::PARAM_INT);
-        $query->bindParam(":priceQuantityEnd", $priceQuantityEnd, PDO::PARAM_INT);
-        $query->bindParam(":createdBy", $createdBy, PDO::PARAM_INT);
-        $query->bindParam(":modifiedBy", $modifiedBy, PDO::PARAM_INT);
-        $query->bindParam(":lockedBy", $lockedBy, PDO::PARAM_INT);
+        $overrideInt = $this->fromBooltoInt($override);
 
-        $query->execute();
+        // $query->bindParam(":productId", $productId, PDO::PARAM_INT);
+        // $query->bindParam(":shopperGroup", $shopperGroup, PDO::PARAM_INT);
+        // $query->bindParam(":productPrice", $productPrice, PDO::PARAM_STR);
+        // $query->bindParam(":override", $overrideInt, PDO::PARAM_INT);
+        // $query->bindParam(":productOverridePrice", $productOverridePrice, PDO::PARAM_STR);
+        // $query->bindParam(":productTaxId", $productTaxId, PDO::PARAM_INT);
+        // $query->bindParam(":productDiscountId", $productDiscountId, PDO::PARAM_INT);
+        // $query->bindParam(":productCurrency", $productCurrency, PDO::PARAM_INT);
+        // $query->bindParam(":defaultDatetime", $defaultDatetime, PDO::PARAM_STR);
+        // $query->bindParam(":priceQuantityStart", $priceQuantityStart, PDO::PARAM_INT);
+        // $query->bindParam(":priceQuantityEnd", $priceQuantityEnd, PDO::PARAM_INT);
+        // $query->bindParam(":createdBy", $createdBy, PDO::PARAM_INT);
+        // $query->bindParam(":modifiedBy", $modifiedBy, PDO::PARAM_INT);
+        // $query->bindParam(":lockedBy", $lockedBy, PDO::PARAM_INT);
+
+        $parameters = [
+            ':productId' => $productId,
+            ':shopperGroup' => $shopperGroup,
+            ':productPrice' => $productPrice,
+            ':override' => $overrideInt,
+            ':productOverridePrice' => $productOverridePrice,
+            ':productTaxId' => $productTaxId,
+            ':productDiscountId' => $productDiscountId,
+            ':productCurrency' => $productCurrency,
+        ];
+
+        $query->execute($parameters);
+    }
+
+    private function fromBooltoInt(bool $bool): int
+    {
+        return $bool ? 1 : 0;
     }
 
     private function getProductPricesRow(ArticleProductEntity $articleEntity): array
