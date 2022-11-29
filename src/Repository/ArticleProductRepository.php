@@ -231,8 +231,8 @@ class ArticleProductRepository
     private function createShopperGroup(ArticleProductEntity $articleEntity, int $shopperGroup): void
     {
         $sql = "INSERT INTO frthv_virtuemart_product_prices ";
-        $sql .= "(virtuemart_product_id, virtuemart_shoppergroup_id, product_price, override, product_override_price, product_tax_id, product_discount_id, product_currency) ";
-        $sql .= "VALUES(:productId, :shopperGroup, :productPrice, :override, :productOverridePrice, :productTaxId, :productDiscountId, :productCurrency)";
+        $sql .= "(virtuemart_product_id, virtuemart_shoppergroup_id, product_price, override, product_override_price, product_tax_id, product_discount_id, product_currency, created_on, created_by, modified_on, modified_by, locked_by) ";
+        $sql .= "VALUES(:productId, :shopperGroup, :productPrice, :override, :productOverridePrice, :productTaxId, :productDiscountId, :productCurrency, :createdOn, :createdBy, :modifiedOn, :modifiedBy, :lockedBy)";
 
         $row = $this->getProductPricesRow($articleEntity);
 
@@ -245,6 +245,9 @@ class ArticleProductRepository
         $productTaxId = $row['product_tax_id'];
         $productDiscountId = $row['product_discount_id'];
         $productCurrency = $row['product_currency'];
+        $createdBy = $row['created_by'];
+        $modifiedBy = $row['modified_by'];
+        $lockedBy = $row['locked_by'];
 
         $overrideInt = $this->fromBooltoInt($override);
 
@@ -272,6 +275,11 @@ class ArticleProductRepository
             ':productTaxId' => $productTaxId,
             ':productDiscountId' => $productDiscountId,
             ':productCurrency' => $productCurrency,
+            ':createdOn' => date('Y-m-d H:i:s'),
+            ':createdBy' => $createdBy,
+            ':modifiedOn' => date('Y-m-d H:i:s'),
+            ':modifiedBy' => $modifiedBy,
+            ':lockedBy' => $lockedBy
         ];
 
         $query->execute($parameters);
