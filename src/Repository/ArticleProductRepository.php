@@ -15,7 +15,7 @@ class ArticleProductRepository
     private PDO $connection;
     private PDO $mysqlConnection;
     private int $length = 0;
-    private int $interval = 2000;
+    private int $interval = 4000;
     private int $synchronisedArticles = 0;
     private float $currentPercentage = 0;
     private string $shopStore;
@@ -367,7 +367,41 @@ class ArticleProductRepository
         string $store,
         string $company
     ): Generator {
-        if ($store === 'All') {
+        $sql = "SELECT articulo.codigo, articulo.nombre, articulo.imagen, ";
+        $sql .= "articulo.baja, articulo.internet, articulo.art_canon, ";
+        $sql .= "pvp.pvp, pvp.tarifa, stocks2.final ";
+        $sql .= "FROM " . $this->from . " ";
+        $sql .= "INNER JOIN pvp ON (articulo.codigo = pvp.articulo) ";
+        $sql .= "INNER JOIN stocks2 ON (articulo.codigo = stocks2.articulo) ";
+        $sql .= "WHERE pvp.tarifa = :rate ";
+        $sql .= "AND stocks2.almacen = :store ";
+        $sql .= "AND stocks2.empresa = :company";
+
+        if ($store === 'All' && $rate === 'All') {
+            $sql = "SELECT articulo.codigo, articulo.nombre, articulo.imagen, ";
+            $sql .= "articulo.baja, articulo.internet, articulo.art_canon, ";
+            $sql .= "pvp.pvp, pvp.tarifa, ";
+            $sql .= "(SELECT SUM(FINAL) TOTALSTOCK FROM stocks2 WHERE articulo = articulo.codigo GROUP BY ARTICULO) AS final ";
+            $sql .= "FROM " . $this->from . " ";
+            $sql .= "INNER JOIN pvp ON (articulo.codigo = pvp.articulo) ";
+            $sql .= "INNER JOIN stocks2 ON (articulo.codigo = stocks2.articulo) ";
+            $sql .= "WHERE pvp.tarifa IN ('01','88') ";
+            $sql .= "AND stocks2.empresa = :company";
+        }
+
+        if ($store !== 'All' && $rate === 'All') {
+            $sql = "SELECT articulo.codigo, articulo.nombre, articulo.imagen, ";
+            $sql .= "articulo.baja, articulo.internet, articulo.art_canon, ";
+            $sql .= "pvp.pvp, pvp.tarifa, stocks2.final ";
+            $sql .= "FROM " . $this->from . " ";
+            $sql .= "INNER JOIN pvp ON (articulo.codigo = pvp.articulo) ";
+            $sql .= "INNER JOIN stocks2 ON (articulo.codigo = stocks2.articulo) ";
+            $sql .= "WHERE pvp.tarifa IN ('01','88') ";
+            $sql .= "AND stocks2.almacen = :store ";
+            $sql .= "AND stocks2.empresa = :company";
+        }
+
+        if ($store === 'All' && $rate !== 'All') {
             $sql = "SELECT articulo.codigo, articulo.nombre, articulo.imagen, ";
             $sql .= "articulo.baja, articulo.internet, articulo.art_canon, ";
             $sql .= "pvp.pvp, pvp.tarifa, ";
@@ -377,21 +411,13 @@ class ArticleProductRepository
             $sql .= "INNER JOIN stocks2 ON (articulo.codigo = stocks2.articulo) ";
             $sql .= "WHERE pvp.tarifa = :rate ";
             $sql .= "AND stocks2.empresa = :company";
-        } else {
-            $sql = "SELECT articulo.codigo, articulo.nombre, articulo.imagen, ";
-            $sql .= "articulo.baja, articulo.internet, articulo.art_canon, ";
-            $sql .= "pvp.pvp, pvp.tarifa, stocks2.final ";
-            $sql .= "FROM " . $this->from . " ";
-            $sql .= "INNER JOIN pvp ON (articulo.codigo = pvp.articulo) ";
-            $sql .= "INNER JOIN stocks2 ON (articulo.codigo = stocks2.articulo) ";
-            $sql .= "WHERE pvp.tarifa = :rate ";
-            $sql .= "AND stocks2.almacen = :store ";
-            $sql .= "AND stocks2.empresa = :company";
-        }
+        } 
 
         $query = $this->connection->prepare($sql);
 
-        $query->bindParam(":rate", $rate, PDO::PARAM_STR);
+        if ($rate !== 'All') {
+            $query->bindParam(":rate", $rate, PDO::PARAM_STR);
+        }
 
         if ($store !== 'All') {
             $query->bindParam(":store", $store, PDO::PARAM_STR);
@@ -403,11 +429,13 @@ class ArticleProductRepository
 
         $articles = $query->fetchAll(PDO::FETCH_ASSOC);
 
-        $this->length = $this->getArticlesLength($articles);
+        $this->length = count($articles);
 
-        if ($store === 'All') {
-            $articles = $this->deleteRepeatedArticles($articles);
-        }
+        // $this->length = $this->getArticlesLength($articles);
+
+        // if ($store === 'All' && $rate !== 'All') {
+        //     $articles = $this->deleteRepeatedArticles($articles);
+        // }
 
         $articlesEntityList = $this->mapToEntity($articles);
         return $articlesEntityList;
@@ -418,7 +446,41 @@ class ArticleProductRepository
         string $store,
         string $company
     ): int {
-        if ($store === 'All') {
+        $sql = "SELECT articulo.codigo, articulo.nombre, articulo.imagen, ";
+        $sql .= "articulo.baja, articulo.internet, articulo.art_canon, ";
+        $sql .= "pvp.pvp, pvp.tarifa, stocks2.final ";
+        $sql .= "FROM " . $this->from . " ";
+        $sql .= "INNER JOIN pvp ON (articulo.codigo = pvp.articulo) ";
+        $sql .= "INNER JOIN stocks2 ON (articulo.codigo = stocks2.articulo) ";
+        $sql .= "WHERE pvp.tarifa = :rate ";
+        $sql .= "AND stocks2.almacen = :store ";
+        $sql .= "AND stocks2.empresa = :company";
+
+        if ($store === 'All' && $rate === 'All') {
+            $sql = "SELECT articulo.codigo, articulo.nombre, articulo.imagen, ";
+            $sql .= "articulo.baja, articulo.internet, articulo.art_canon, ";
+            $sql .= "pvp.pvp, pvp.tarifa, ";
+            $sql .= "(SELECT SUM(FINAL) TOTALSTOCK FROM stocks2 WHERE articulo = articulo.codigo GROUP BY ARTICULO) AS final ";
+            $sql .= "FROM " . $this->from . " ";
+            $sql .= "INNER JOIN pvp ON (articulo.codigo = pvp.articulo) ";
+            $sql .= "INNER JOIN stocks2 ON (articulo.codigo = stocks2.articulo) ";
+            $sql .= "WHERE pvp.tarifa IN ('01','88') ";
+            $sql .= "AND stocks2.empresa = :company";
+        }
+
+        if ($store !== 'All' && $rate === 'All') {
+            $sql = "SELECT articulo.codigo, articulo.nombre, articulo.imagen, ";
+            $sql .= "articulo.baja, articulo.internet, articulo.art_canon, ";
+            $sql .= "pvp.pvp, pvp.tarifa, stocks2.final ";
+            $sql .= "FROM " . $this->from . " ";
+            $sql .= "INNER JOIN pvp ON (articulo.codigo = pvp.articulo) ";
+            $sql .= "INNER JOIN stocks2 ON (articulo.codigo = stocks2.articulo) ";
+            $sql .= "WHERE pvp.tarifa IN ('01','88') ";
+            $sql .= "AND stocks2.almacen = :store ";
+            $sql .= "AND stocks2.empresa = :company";
+        }
+
+        if ($store === 'All' && $rate !== 'All') {
             $sql = "SELECT articulo.codigo, articulo.nombre, articulo.imagen, ";
             $sql .= "articulo.baja, articulo.internet, articulo.art_canon, ";
             $sql .= "pvp.pvp, pvp.tarifa, ";
@@ -428,21 +490,13 @@ class ArticleProductRepository
             $sql .= "INNER JOIN stocks2 ON (articulo.codigo = stocks2.articulo) ";
             $sql .= "WHERE pvp.tarifa = :rate ";
             $sql .= "AND stocks2.empresa = :company";
-        } else {
-            $sql = "SELECT articulo.codigo, articulo.nombre, articulo.imagen, ";
-            $sql .= "articulo.baja, articulo.internet, articulo.art_canon, ";
-            $sql .= "pvp.pvp, pvp.tarifa, stocks2.final ";
-            $sql .= "FROM " . $this->from . " ";
-            $sql .= "INNER JOIN pvp ON (articulo.codigo = pvp.articulo) ";
-            $sql .= "INNER JOIN stocks2 ON (articulo.codigo = stocks2.articulo) ";
-            $sql .= "WHERE pvp.tarifa = :rate ";
-            $sql .= "AND stocks2.almacen = :store ";
-            $sql .= "AND stocks2.empresa = :company";
         }
 
         $query = $this->connection->prepare($sql);
 
-        $query->bindParam(":rate", $rate, PDO::PARAM_STR);
+        if ($rate !== 'All') {
+            $query->bindParam(":rate", $rate, PDO::PARAM_STR);
+        }
 
         if ($store !== 'All') {
             $query->bindParam(":store", $store, PDO::PARAM_STR);
@@ -454,12 +508,13 @@ class ArticleProductRepository
 
         $articles = $query->fetchAll(PDO::FETCH_ASSOC);
 
-        if ($store === 'All') {
-            $articles = $this->deleteRepeatedArticles($articles);
-            return $this->getArticlesLengthGivenaGenerator($articles);
-        }
+        return count($articles);
+        // if ($store === 'All' && $rate !== 'All') {
+        // $articles = $this->deleteRepeatedArticles($articles);
+        // return $this->getArticlesLengthGivenaGenerator($articles);
+        // }
 
-        return $this->getArticlesLength($articles);
+        // return $this->getArticlesLength($articles);
 
         // return $this->getArticlesLengthGivenaGenerator($articles);
     }
@@ -506,7 +561,7 @@ class ArticleProductRepository
         return $currentLength;
     }
 
-    private function getArticlesLengthGivenaGenerator(Generator $articles): int
+    private function getArticlesLengthGivenaGenerator(array $articles): int
     {
         $repeatedArticles = [];
 
@@ -731,6 +786,17 @@ class ArticleProductRepository
 
         $envFileReplaced = preg_replace('/TOTAL_ARTICLES=.*/', "TOTAL_ARTICLES=\"$totalArticles\"", $envFile);
 
+        file_put_contents($envFilePath, $envFileReplaced);
+    }
+
+    public function resetCurrentProgress(): void
+    {
+        $envFilePath = $this->params->get('env.file');
+        $envFile = file_get_contents($envFilePath);
+
+        $value = "0";
+
+        $envFileReplaced = preg_replace('/ARTICLES_SYNCHRONISED=.*/', "ARTICLES_SYNCHRONISED=\"$value\"", $envFile);
         file_put_contents($envFilePath, $envFileReplaced);
     }
 

@@ -43,8 +43,13 @@
             </div>
         </div>
 
-        <div class="composite-card__footer">
-            <button class="button" data-loading="addClass(opacity-50) addAttribute(disabled)" data-action="live#action" data-action-name="synchronise">Sincronizar</button>
+        <div style="display:flex;">
+            <div class="composite-card__footer">
+                <button class="button" data-loading="addClass(opacity-50) addAttribute(disabled)" data-action="live#action" data-action-name="synchronise">Sincronizar</button>
+            </div>
+            <div class="composite-card__footer">
+                <button class="button" data-loading="addClass(opacity-50) addAttribute(disabled)" data-action="live#action" data-action-name="reset">Reset</button>
+            </div>
         </div>
     </div>
     {% if hide == false %}
