@@ -81,6 +81,12 @@ class ArticlesSynchronisationComponent
         }
     }
 
+    #[LiveAction]
+    public function reset(): void
+    {
+        $this->articleRepository->resetCurrentProgress();
+    }
+
     private function showLogDisplay(): void
     {
         $this->hide = false;
