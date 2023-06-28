@@ -51,11 +51,37 @@ services:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
     volumes:
       - ./data:/var/lib/mysql
-      # - ./logs/mysql:${MYSQL_LOG_DIR}
       - ./.docker/mysql/docker-entrypoint-initdb:/docker-entrypoint-initdb.d
     networks:
       connector_net:
         ipv4_address: 192.168.1.4
+
+  dbtest:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: conector
+        MYSQL_USER: antonio
+        MYSQL_PASSWORD: antonio123
+    volumes:
+      - ./conector-data:/var/lib/mysql
+      - ./.docker/conector-db/docker-entrypoint-initdb:/docker-entrypoint-initdb.d
+    ports:
+      - 3309:3306
+    networks:
+      connector_net:
+        ipv4_address: 192.168.1.6
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8053:8080
+    networks:
+      connector_net:
+        ipv4_address: 192.168.1.7
 
   sql-server:
     image: mcr.microsoft.com/mssql/server:2019-latest

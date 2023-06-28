@@ -15,7 +15,8 @@
 ###< Rest client vscode extension ###
 
 ###> Mysql docker container ###
-/data/
+/data
+/conector-data
 ###< Mysql docker container ###
 
 ###> Zip lambda service ###

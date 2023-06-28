@@ -1,9 +1,14 @@
 <?php
-
 namespace App\Components;
 
+use App\Synchronisation\Application\Update\ArticleRequest;
+use App\Synchronisation\Application\Update\ArticleSynchronisationService;
 use App\Model\Synchronisation\ArticlesSynchronisationService;
 use App\Repository\ArticleProductRepository;
+use App\Shared\Domain\Bus\Command\CommandBus;
+use App\Synchronisation\Application\Update\ArticleSynchronisation;
+use App\Synchronisation\Application\Update\UpdateArticleCommand;
+use App\Synchronisation\Application\Update\UpdateArticleCommandHandler;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
@@ -40,16 +45,17 @@ class ArticlesSynchronisationComponent
     #[LiveProp()]
     public string $synchronisedArticles = '';
 
-    private ArticlesSynchronisationService $synchronisationService;
-    private ArticleProductRepository $articleRepository;
-    private ContainerBagInterface $params;
-
     public function __construct(
-        ArticlesSynchronisationService $synchronisationService,
-        ArticleProductRepository $articleRepository,
-        ContainerBagInterface $params
+        private ArticlesSynchronisationService $synchronisationService,
+        // private ArticleSynchronisationService $articleSynchronisationService,
+        private ArticleSynchronisation $articleSynchronisation,
+        private ArticleProductRepository $articleRepository,
+        private CommandBus $commandBusSync,
+        // private CommandHandler $updateArticleCommandHandler,
+        private ContainerBagInterface $params
     ) {
         $this->synchronisationService = $synchronisationService;
+        // $this->articleSynchronisationService = $articleSynchronisationService;
         $this->articleRepository = $articleRepository;
         $this->params = $params;
     }
@@ -69,7 +75,14 @@ class ArticlesSynchronisationComponent
             $this->messageError = '';
             // $this->showProgressVisibility();
             $this->showLogDisplay();
-            $this->synchronisationService->synchronise();
+            // $this->synchronisationService->synchronise();
+            $rate = $this->params->get('shop.rate');
+            $store = $this->params->get('shop.store');
+            $company = '01';
+            $command = new UpdateArticleCommand($rate, $store, $company);
+            $this->commandBusSync->register($command, new UpdateArticleCommandHandler($this->articleSynchronisation));
+            // $articleRequest = new UpdateArticleCommand($rate, $store, $company);
+            // $this->articleSynchronisationService->__invoke($articleRequest);
             $this->articles = $this->articleRepository->getAll();
             $this->shopStore = $this->params->get('shop.store');
             $this->totalArticles = $this->articleRepository->getTotalArticles();
