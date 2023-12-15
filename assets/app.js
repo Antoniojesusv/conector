@@ -1,3 +1,4 @@
+import { registerSvelteControllerComponents } from "@symfony/ux-svelte";
 /*
  * Welcome to your app's main JavaScript file!
  *
@@ -6,8 +7,10 @@
  */
 
 // any CSS you import will output into a single css file (app.css in this case)
-import 'normalize.css';
-import './styles/app.css';
+import "normalize.css";
+import "./styles/app.css";
+import "./bootstrap";
 
-// start the Stimulus application
-import './bootstrap';
+registerSvelteControllerComponents(
+  require.context("./svelte/controllers", true, /\.svelte$/)
+);
