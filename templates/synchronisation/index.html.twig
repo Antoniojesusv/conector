@@ -6,5 +6,6 @@
     <h1>{% block main_title %}Sincronización{% endblock %}</h1>
  
     {{ component('images_synchronisation') }}
-    {{ component('articles_synchronisation') }}
+    {# {{ component('articles_synchronisation') }} #}
+    <div {{ svelte_component('Synchronization') }}></div>
 {% endblock %}

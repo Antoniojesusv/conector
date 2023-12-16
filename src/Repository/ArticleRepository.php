@@ -3,9 +3,9 @@
 namespace App\Repository;
 
 use App\DbConnectors\Factories\PdoFactoryI;
-use App\DbConnectors\PdoConnector;
 use App\Model\Synchronisation\ArticleEntity;
 use App\Model\Synchronisation\ArticleRepositoryI;
+use App\Shared\Infrastructure\Pdo\Dbal\Contract\PdoManager;
 use Error;
 use Exception;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
@@ -27,27 +27,25 @@ class ArticleRepository implements ArticleRepositoryI
     // private float $currentNumberPercentage = 0;
 
     public function __construct(
-        PdoFactoryI $sqlPdoFactory,
+        private PdoManager $sqlServerPdoManager,
         ContainerBagInterface $params
     ) {
-        $this->sqlPdoFactory = $sqlPdoFactory;
         $this->params = $params;
         $this->from = 'articulo';
-        $sqlServerPdoConnector = $this->getPdoConnection();
-        $sqlServerPdoConnector->hasConnection() ? $sqlServerPdoConnector->reconnect() : $sqlServerPdoConnector->connect();
-        $this->connection = $sqlServerPdoConnector->getConnection();
+        $this->sqlServerPdoManager = $sqlServerPdoManager;
+        $this->connection = $this->sqlServerPdoManager->getConnection();
     }
 
-    public function getPdoConnection(): PdoConnector
-    {
-        $authenticationMethod = $this->params->get("sql.authentication.method");
+    // public function getPdoConnection(): PdoConnector
+    // {
+    //     $authenticationMethod = $this->params->get("sql.authentication.method");
 
-        if ($authenticationMethod === 'nm') {
-            return $this->sqlPdoFactory->create('sqlServer');
-        }
+    //     if ($authenticationMethod === 'nm') {
+    //         return $this->sqlPdoFactory->create('sqlServer');
+    //     }
 
-        return $this->sqlPdoFactory->create();
-    }
+    //     return $this->sqlPdoFactory->create();
+    // }
 
     public function save(iterable $entityList): void
     {

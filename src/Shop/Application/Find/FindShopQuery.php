@@ -1,7 +1,7 @@
 <?php
 
 declare(strict_types=1);
-namespace App\Synchronisation\Application\Update;
+namespace App\Shop\Application\Find;
 
 use App\Shared\Domain\Bus\Query\Query;
 

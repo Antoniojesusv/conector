@@ -1,58 +1,57 @@
 .live-log {
-    /* display: flex; */
-    position: relative;
-    width: 100%;
-    /* flex-direction: column; */
-    overflow: auto;
+  /* display: flex; */
+  position: relative;
+  width: 100%;
+  /* flex-direction: column; */
+  overflow: auto;
 }
 
 .live-log__header {
-    display: flex;
-    align-items: center;
-    padding: 1rem 0rem 1rem 1rem;
-    border-bottom: 1px solid rgba(26,54,126,.125);
-    background-color: #f3d955;
-    font-weight: 800;
+  display: flex;
+  align-items: center;
+  padding: 1rem 0rem 1rem 1rem;
+  border-bottom: 1px solid rgba(26, 54, 126, 0.125);
+  background-color: #f3d955;
+  font-weight: 800;
 }
 
 .live-log__title {
-    width: 30%;
+  width: 30%;
 }
 
 .live-log__container-icon {
-    display: flex;
-    justify-content: end;
-    width: 70%;
+  display: flex;
+  justify-content: end;
+  width: 70%;
 }
 
 .live-log__icon {
-    font-size: 1.5rem;
-    cursor: pointer;
+  font-size: 1.5rem;
+  cursor: pointer;
 }
 
 .live-log__body {
-    overflow-y: auto;
+  overflow-y: auto;
 }
 
 .live-log__error-item {
-    color: #ff003d;
+  color: #ff003d;
 }
 
 .live-log__item-value-error {
-    color: #d92550;
+  color: #d92550;
 }
 
 .live-log__button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-
 .live-log__error-message {
-    color: #d92550;
+  color: #d92550;
 }
 
 .show-flex {
-    display: flex;
+  display: flex;
 }

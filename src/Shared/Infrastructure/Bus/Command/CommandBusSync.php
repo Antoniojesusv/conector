@@ -1,22 +1,40 @@
 <?php
 
 declare(strict_types=1);
-namespace App\Shared\Infrustructure\Bus\Command;
+namespace App\Shared\Infrastructure\Bus\Command;
 
-use App\Shared\Domain\Bus\Command\Command;
-use App\Shared\Domain\Bus\Command\CommandBus;
+use App\Shared\Domain\Bus\Command\Contract\Command;
+use App\Shared\Domain\Bus\Command\Contract\CommandBus;
+use App\Shared\Domain\Bus\Middleware\Exception\ObjectIsNotMiddlewareInstance;
 
 final class CommandBusSync implements CommandBus
 {
-    private array $handlers = [];
-
-    public function register(Command $command, callable $handler): void
-    {
-        $this->handlers[$command::class] = $handler;
+    public function __construct(
+        private CommandHandlerResolver $commandHandlerResolver,
+        private array $middlewares = []
+    ) {
+        $this->commandHandlerResolver = $commandHandlerResolver;
+        $this->middlewares = $middlewares;
     }
 
-    public function dispatch(Command $command): void
+    private function createChain(): \Closure
     {
-        $this->handlers[$command::class]($command);
+        $lastMiddleware = fn($command) => $this->commandHandlerResolver->getHandlerFor($command)($command);
+        $middlewareList = [...$this->middlewares];
+
+        while ($middleware = array_pop($middlewareList)) {
+            if (($middleware instanceof Middleware)) {
+                throw new ObjectIsNotMiddlewareInstance($middleware);
+            }
+            $lastMiddleware = fn($command) => $middleware($command, $lastMiddleware);
+        }
+
+        return $lastMiddleware;
+    }
+
+    public function dispatch(Command $command): mixed
+    {
+        $chain = $this->createChain();
+        return $chain($command);
     }
 }

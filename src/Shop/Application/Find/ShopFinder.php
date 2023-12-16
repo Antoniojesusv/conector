@@ -1,12 +1,15 @@
 <?php
 
 declare(strict_types=1);
-namespace App\Synchronisation\Application\Update;
+namespace App\Shop\Application\Find;
+
+use App\Article\Application\Synchronization\ArticleSynchronization;
+use App\Synchronization\Application\Update\UpdateArticleCommand;
 
 final class ShopFinder
 {
     public function __construct(
-        private ArticleSynchronisation $articleService
+        private ArticleSynchronization $articleService
     ) {
     }
 

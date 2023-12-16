@@ -1,27 +1,23 @@
 .synchronisation-icon {
-    font-size: 2rem;
+  font-size: 2rem;
 }
 
 .synchronisation-card__folder {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .synchronisation-card__image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-/* .synchronisation-status {
-    padding: 1rem 0rem;
-} */
-
 .synchronisation-status__title {
-    margin: 0rem;
-    padding: 0.5rem 0rem;
+  margin: 0rem;
+  padding: 0.5rem 0rem;
 }
 
 .synchronisation-status__message {
-    padding: 0.5rem 0rem;
+  padding: 0.5rem 0rem;
 }

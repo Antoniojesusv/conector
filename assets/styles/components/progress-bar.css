@@ -1,47 +1,48 @@
 .progress-bar__parent-container {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    padding: 1rem 0rem;
-    width: 80%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 1rem 0rem;
+  width: 80%;
 }
 
 .progress-bar__title {
-    width: 100%;
-    margin: 0rem;
-    padding-bottom: 0.5rem;
+  width: 100%;
+  margin: 0rem;
+  padding-bottom: 0.5rem;
 }
-  
+
 .progress-bar__container {
-    width: 60%;
-    height: 2rem;
-    border-radius: 10px;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.5s;
-    will-change: transform;
-    box-shadow: 0 0 5px #3f6ad8;
+  width: 100%;
+  max-width: 550px;
+  height: 2rem;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s;
+  will-change: transform;
+  box-shadow: 0 0 5px #3f6ad8;
 }
-  
+
 .progress-bar {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    content: "";
-    background-color: #3f6ad8;
-    top:0;
-    bottom: 0;
-    left: -100%;
-    border-radius: inherit;
-    display: flex;
-    justify-content: center;
-    align-items:center;
-    color: white;
-    font-family: sans-serif;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  content: "";
+  background-color: #3f6ad8;
+  top: 0;
+  bottom: 0;
+  left: -100%;
+  border-radius: inherit;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-family: sans-serif;
 }
 
 .progress-bar__percentage {
-    font-weight: 800;
-    font-size: 1.5rem;
-    padding: 0rem 1rem;
+  font-weight: 800;
+  font-size: 1.5rem;
+  padding: 0rem 1rem;
 }

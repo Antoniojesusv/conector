@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Form\ShopModel;
 use App\Form\ShopType;
 use App\Model\Shop\ShopService;
-use App\Repository\ArticleProductRepository;
+// use App\Repository\ArticleProductRepository;
 use App\Repository\ShopRepository;
 use App\Repository\Stocks2Repository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,7 +35,7 @@ class ShopController extends AbstractController
         ShopRepository $shopRepository,
         Stocks2Repository $stocks2Repository,
         ShopService $shopService,
-        ArticleProductRepository $articleRepository,
+        //ArticleProductRepository $articleRepository,
     ): Response {
         $shopModel = new ShopModel();
 
@@ -51,8 +51,8 @@ class ShopController extends AbstractController
         $form->handleRequest($request);
 
         if ($form && $form->isSubmitted() && $form->isValid()) {
-            $articleRepository->saveTotalArticles(0);
-            $articleRepository->saveSynchronisedArticles(0);
+            //$articleRepository->saveTotalArticles(0);
+            //$articleRepository->saveSynchronisedArticles(0);
             $shopModel = $form->getData();
             $data = $shopModel->toArray();
             $shopService->persist($data);
@@ -62,5 +62,25 @@ class ShopController extends AbstractController
         return $this->renderForm('shop/edit.html.twig', [
             'form' => $form,
         ]);
+    }
+
+    /**
+     * @Route("/shop/data", name="shop_get", methods={"GET"})
+     */
+    public function getShop(
+        ShopRepository $shopRepository,
+    ): Response {
+        $shopModel = new ShopModel();
+
+        $shopEntity = $shopRepository->get();
+        $shopModel->setData($shopEntity);
+
+        $response = new Response(
+            json_encode($shopModel->toArray()),
+            Response::HTTP_OK,
+            ['content-type' => 'text/html']
+        );
+
+        return $response;
     }
 }

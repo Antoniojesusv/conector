@@ -7,7 +7,6 @@
                 <th class="table__cell-head">Dominio/Ip</th>
                 <th class="table__cell-head">Puerto</th>
                 <th class="table__cell-head">Tipo</th>
-                <th class="table__cell-head">Servidor</th>
                 <th class="table__cell-head">Status</th>
                 <th class="table__cell-head">Acciones</th>
             </tr>
@@ -15,8 +14,8 @@
         <tbody class="table__body">
             {% for connection in this.connections %}
             <tr>
-                {% if connection.database is defined %}
-                    <td class="table__cell">{{ connection.database }}</td>
+                {% if connection.databaseName is defined %}
+                    <td class="table__cell">{{ connection.databaseName }}</td>
                 {% else %}
                     <td class="table__cell">Ninguno</td>
                 {% endif %}
@@ -30,22 +29,17 @@
                 {% else %}
                     <td class="table__cell">Ninguno</td>
                 {% endif %}
-                {% if connection.exposedPort is defined %}
-                    <td class="table__cell">{{ connection.exposedPort }}</td>
+                {% if connection.port is defined %}
+                    <td class="table__cell">{{ connection.port }}</td>
                 {% else %}
                     <td class="table__cell">Ninguno</td>
                 {% endif %}
                 <td class="table__cell">{{ connection.type }}</td>
-                {% if connection.server is defined %}
-                    <td class="table__cell">{{ connection.server }}</td>
-                {% else %}
-                    <td class="table__cell">Ninguno</td>
-                {% endif %}
-                <td class="table__cell table__cell-status">
-                    {% if connection.status == false %}
+                <td class="table__cell">
+                    {% if not connection.status %}
                         <div class="table__status">
                             <div class="table__badge-dot table__badge-dot--disconnected"></div>
-                            <span class="table__status-message">{{ connection.message }}</span>
+                            <span class="table__status-message">No Conectado</span>
                         </div>
                     {% else %}
                         <div class="table__status">
@@ -54,11 +48,7 @@
                         </div>
                     {% endif %}
                 </td>
-                {% if connection.type == 'sqlServer' %}
-                    <td class="table__cell"><a class="button" href="{{ path('database_authentication_options') }}"><i class="fa-solid fa-pen table__icon-button"></i>Editar</a></td>
-                {% else %}
-                    <td class="table__cell"><a class="button" href="{{ path('database_post_edit', {id: connection.type}) }}"><i class="fa-solid fa-pen table__icon-button"></i>Editar</a></td>
-                {% endif %}
+                <td class="table__cell"><a class="button" href="{{ path('database_post_edit', {id: connection.type}) }}"><i class="fa-solid fa-pen table__icon-button"></i>Editar</a></td>
             </tr>
             {% endfor %}
         </tbody>

@@ -12,7 +12,7 @@ class SynchronisationService
     private ContainerBagInterface $params;
     private DirectoryReadService $directoryReadService;
     private ArticleRepositoryI $articleRepository;
-    
+
     public function __construct(
         ContainerBagInterface $params,
         DirectoryReadService $directoryReadService,
@@ -102,7 +102,7 @@ class SynchronisationService
     private function getImagesFilesName(array $filesPath): Generator
     {
         // $imagesFilesNameList = [];
-        
+
         foreach ($filesPath as $filePath) {
             $filePathSanitized = preg_replace('/\s/', '', $filePath);
             preg_match('/[\w\d-]+\].+/', $filePathSanitized, $match);
@@ -134,7 +134,7 @@ class SynchronisationService
         rename($filePath, $filePathSanitized);
     }
 
-    private function buildImagesFilesNameAssociativeList(Iterable $imagesFilesNameList): Generator
+    private function buildImagesFilesNameAssociativeList(iterable $imagesFilesNameList): Generator
     {
         // $imagesFilesNameAssociativeList = [];
 
@@ -149,10 +149,10 @@ class SynchronisationService
         // return $imagesFilesNameAssociativeList;
     }
 
-    private function buildEntityList(Iterable $imagesFilesNameAssociativeList): Generator
+    private function buildEntityList(iterable $imagesFilesNameAssociativeList): Generator
     {
         // $entityList = [];
-        
+
         foreach ($imagesFilesNameAssociativeList as ['code' => $code, 'imageName' => $fileName, 'imagen' => $imagePath, 'eurowinImage' => $eurowinImagePath]) {
             // $entityList[] = new ArticleEntity($code, $fileName, $imagePath);
             yield new ArticleEntity($code, $fileName, $imagePath, $eurowinImagePath);

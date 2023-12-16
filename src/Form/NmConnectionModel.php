@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Model\Database\Entities\NmConnectionEntity;
+use App\Connection\Domain\Connection;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class NmConnectionModel
@@ -52,7 +52,7 @@ class NmConnectionModel
         return $this->password;
     }
 
-    public function setPassword(?string $password = ''): void
+    public function setPassword(string $password): void
     {
         $this->password = $password;
     }
@@ -76,7 +76,7 @@ class NmConnectionModel
     {
         $this->database = $database;
     }
-    
+
     public function getExposedPort(): string
     {
         return $this->exposedPort;
@@ -87,13 +87,13 @@ class NmConnectionModel
         $this->exposedPort = $exposedPort;
     }
 
-    public function setData(NmConnectionEntity $connection): void
+    public function setData(Connection $connection): void
     {
-        $this->user = $connection->getUser();
-        $this->password = $connection->getPassword();
-        $this->address = $connection->getAddress();
-        $this->database = $connection->getDatabase();
-        $this->exposedPort = $connection->getExposedPort();
+        $this->user = $connection->user();
+        $this->password = $connection->password();
+        $this->address = $connection->address();
+        $this->database = $connection->databaseName();
+        $this->exposedPort = $connection->port();
     }
 
     public function toArray(): array

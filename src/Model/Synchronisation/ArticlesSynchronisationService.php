@@ -2,20 +2,20 @@
 
 namespace App\Model\Synchronisation;
 
-use App\Repository\ArticleProductRepository;
+// use App\Repository\ArticleProductRepository;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
 class ArticlesSynchronisationService
 {
     private ContainerBagInterface $params;
-    private ArticleProductRepository $articleRepository;
-    
+    //private ArticleProductRepository $articleRepository;
+
     public function __construct(
         ContainerBagInterface $params,
-        ArticleProductRepository $articleRepository
+        // ArticleProductRepository $articleRepository
     ) {
         $this->params = $params;
-        $this->articleRepository = $articleRepository;
+        // $this->articleRepository = $articleRepository;
     }
 
     public function synchronise(): void
@@ -24,7 +24,7 @@ class ArticlesSynchronisationService
         $store = $this->params->get('shop.store');
         $company = '01';
 
-        $entityList = $this->articleRepository->getAllByRateStockStoreAndCompany($rate, $store, $company);
-        $this->articleRepository->save($entityList);
+        // $entityList = $this->articleRepository->getAllByRateStockStoreAndCompany($rate, $store, $company);
+        // $this->articleRepository->save($entityList);
     }
 }
