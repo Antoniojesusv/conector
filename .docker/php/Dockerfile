@@ -10,7 +10,7 @@ RUN mv /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
 
 COPY php.ini /usr/local/etc/php/conf.d/docker-php-config.ini
 
-RUN echo 'max_execution_time = 120' >> /usr/local/etc/php/conf.d/docker-php-maxexectime.ini;
+RUN echo 'max_execution_time = 300' >> /usr/local/etc/php/conf.d/docker-php-maxexectime.ini;
 
 RUN apt-get update && apt-get install -y \
     xclip \
