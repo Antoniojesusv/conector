@@ -3,117 +3,205 @@
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+
 parameters:
+  mysql.user: "%env(MYSQL_USER)%"
+  mysql.password: "%env(MYSQL_PASSWORD)%"
+  mysql.address: "%env(MYSQL_ADDRESS)%"
+  mysql.database: "%env(MYSQL_DATABASE)%"
+  mysql.exposed.port: "%env(MYSQL_EXPOSED_PORT)%"
+  mysql.dsn: "%env(MYSQL_DSN)%"
 
-    mysql.user: '%env(MYSQL_USER)%'
-    mysql.password: '%env(MYSQL_PASSWORD)%'
-    mysql.address: '%env(MYSQL_ADDRESS)%'
-    mysql.database: '%env(MYSQL_DATABASE)%'
-    mysql.exposed.port: '%env(MYSQL_EXPOSED_PORT)%'
-    mysql.dsn: '%env(MYSQL_DSN)%'
+  sql.user: "%env(SQL_SERVER_USER)%"
+  sql.password: "%env(SA_PASSWORD)%"
+  sql.address: "%env(SQL_SERVER_ADDRESS)%"
+  sql.database: "%env(SQL_SERVER_DATABASE)%"
+  sql.exposed.port: "%env(SQL_SERVER_EXPOSED_PORT)%"
+  sql.dsn: "%env(SQL_DSN)%"
+  sql.authentication.method: "%env(SQL_SERVER_AUTHENTICATION_METHOD)%"
 
-    sql.user: '%env(SQL_SERVER_USER)%'
-    sql.password: '%env(SA_PASSWORD)%'
-    sql.address: '%env(SQL_SERVER_ADDRESS)%'
-    sql.database: '%env(SQL_SERVER_DATABASE)%'
-    sql.exposed.port: '%env(SQL_SERVER_EXPOSED_PORT)%'
-    sql.dsn: '%env(SQL_DSN)%'
-    sql.authentication.method: '%env(SQL_SERVER_AUTHENTICATION_METHOD)%'
+  sql.server: "%env(SERVER_SQL)%"
+  sql.microsoft.dsn: "%env(SQL_MICROSOFT_USER_DSN)%"
 
-    sql.server: '%env(SERVER_SQL)%'
-    sql.microsoft.dsn: '%env(SQL_MICROSOFT_USER_DSN)%'
+  connector.mysql.user: "%env(CONECTOR_MYSQL_USER)%"
+  connector.mysql.password: "%env(CONECTOR_MYSQL_PASSWORD)%"
+  connector.mysql.dsn: "%env(CONECTOR_MYSQL_DSN)%"
 
-    shop.name: '%env(SHOP_NAME)%'
-    shop.rate: '%env(SHOP_RATE)%'
-    shop.store: '%env(SHOP_STORE)%'
-    server.photos.path: '%env(SERVER_PHOTOS_PATH)%'
-    server.eurowin.photos.path: '%env(SERVER_EUROWIN_PHOTOS_PATH)%'
-    articles.progress.update: '%env(ARTICLES_UPDATE_PROGRESS)%'
-    articles.synchronised: '%env(ARTICLES_SYNCHRONISED)%'
-    total.articles: '%env(TOTAL_ARTICLES)%'
-    interval: '%env(INTERVAL)%'
+  shop.name: "%env(SHOP_NAME)%"
+  shop.rate: "%env(SHOP_RATE)%"
+  shop.store: "%env(SHOP_STORE)%"
+  server.photos.path: "%env(SERVER_PHOTOS_PATH)%"
+  server.eurowin.photos.path: "%env(SERVER_EUROWIN_PHOTOS_PATH)%"
+  articles.progress.update: "%env(ARTICLES_UPDATE_PROGRESS)%"
+  articles.synchronised: "%env(ARTICLES_SYNCHRONISED)%"
+  total.articles: "%env(TOTAL_ARTICLES)%"
+  interval: "%env(INTERVAL)%"
 
-    workdir: "%kernel.project_dir%"
-    env.file: "%kernel.project_dir%/.env"
-    images.log.file: "%kernel.project_dir%/images-log.json"
-    articles.log.file: "%kernel.project_dir%/articles-log.json"
-    error.log.file: "%kernel.project_dir%/error-log.json"
-    images.temporary.folder: "%kernel.project_dir%/public/temporaryImages"
+  workdir: "%kernel.project_dir%"
+  env.file: "%kernel.project_dir%/.env"
+  images.log.file: "%kernel.project_dir%/images-log.json"
+  articles.log.file: "%kernel.project_dir%/articles-log.json"
+  error.log.file: "%kernel.project_dir%/error-log.json"
+  images.temporary.folder: "%kernel.project_dir%/public/temporaryImages"
 
 services:
+  # react.event.loop:
+  #     class: React\EventLoop\Loop
 
-    # react.event.loop: 
-    #     class: React\EventLoop\Loop
+  # React\EventLoop\Loop: '@react.event.loop'
 
-    # React\EventLoop\Loop: '@react.event.loop'
+  # default configuration for services in *this* file
+  _defaults:
+    autowire: true # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
-    # default configuration for services in *this* file
-    _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+  # makes classes in src/ available to be used as services
+  # this creates a service per class whose id is the fully-qualified class name
+  App\:
+    resource: "../src/"
+    exclude:
+      - "../src/DependencyInjection/"
+      - "../src/Entity/"
+      - "../src/**/Entities/"
+      - "../src/Kernel.php"
 
-    # makes classes in src/ available to be used as services
-    # this creates a service per class whose id is the fully-qualified class name
-    App\:
-        resource: '../src/'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/**/Entities/'
-            - '../src/Kernel.php'
+  # add more service definitions when explicit configuration is needed
+  # please note that last definitions always *replace* previous ones
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+  App\Model\Database\DatabaseService:
+    arguments:
+      $sqlPdoFactory: '@App\DbConnectors\Factories\SqlServerPdoFactory'
+      $mysqlPdoFactory: '@App\DbConnectors\Factories\MysqlPdoFactory'
+      $nmConnectionRepository: '@App\Repository\NmConnectionRepository'
+      $uWconnectionRepository: '@App\Repository\UwConnectionRepository'
+      $nmConnectionFactory: '@App\Model\Database\Factories\NmConnectionFactory'
+      $uWConnectionFactory: '@App\Model\Database\Factories\UwConnectionFactory'
 
-    App\Components\ArticlesSynchronisationComponent:
-        arguments:
-           $commandBusSync: '@App\Shared\Infrustructure\Bus\Command\CommandBusSync'
+  App\Repository\NmConnectionRepository:
+    arguments:
+      $sqlPdoFactory: '@App\DbConnectors\Factories\SqlServerPdoFactory'
+      $mysqlPdoFactory: '@App\DbConnectors\Factories\MysqlPdoFactory'
+      $nmConnectionFactory: '@App\Model\Database\Factories\NmConnectionFactory'
 
-    App\Model\Database\DatabaseService:
-        arguments:
-           $sqlPdoFactory: '@App\DbConnectors\Factories\SqlServerPdoFactory'
-           $mysqlPdoFactory: '@App\DbConnectors\Factories\MysqlPdoFactory'
-           $nmConnectionRepository: '@App\Repository\NmConnectionRepository'
-           $uWconnectionRepository: '@App\Repository\UwConnectionRepository'
-           $nmConnectionFactory: '@App\Model\Database\Factories\NmConnectionFactory'
-           $uWConnectionFactory: '@App\Model\Database\Factories\UwConnectionFactory'
-    
-    App\Model\Synchronisation\SynchronisationService:
-        arguments:
-           $articleRepository: '@App\Repository\ArticleRepository'
-    
-    App\Repository\NmConnectionRepository:
-        arguments:
-           $sqlPdoFactory: '@App\DbConnectors\Factories\SqlServerPdoFactory'
-           $mysqlPdoFactory: '@App\DbConnectors\Factories\MysqlPdoFactory'
-           $nmConnectionFactory: '@App\Model\Database\Factories\NmConnectionFactory'
+  App\Repository\UwConnectionRepository:
+    arguments:
+      $sqlPdoFactory: '@App\DbConnectors\Factories\SqlServerPdoFactory'
+      $uWConnectionFactory: '@App\Model\Database\Factories\UwConnectionFactory'
 
-    App\Repository\UwConnectionRepository:
-        arguments:
-           $sqlPdoFactory: '@App\DbConnectors\Factories\SqlServerPdoFactory'
-           $uWConnectionFactory: '@App\Model\Database\Factories\UwConnectionFactory'
+  App\Model\Synchronisation\SynchronisationService:
+    arguments:
+      $articleRepository: '@App\Repository\ArticleRepository'
 
-    App\Repository\ArticleRepository:
-        arguments:
-           $sqlPdoFactory: '@App\DbConnectors\Factories\SqlServerPdoFactory'
+  App\Repository\Stocks2Repository:
+    arguments:
+      $sqlPdoFactory: '@App\DbConnectors\Factories\SqlServerPdoFactory'
 
-    App\Repository\ArticleProductRepository:
-        arguments:
-           $sqlPdoFactory: '@App\DbConnectors\Factories\SqlServerPdoFactory'
-           $mysqlPdoFactory: '@App\DbConnectors\Factories\MysqlPdoFactory'
+  App\Shared\Infrastructure\Pdo\FactoryMethod\ConnectorDbManager: ~
 
-    App\Repository\Stocks2Repository:
-        arguments:
-           $sqlPdoFactory: '@App\DbConnectors\Factories\SqlServerPdoFactory'
+  App\Shared\Infrastructure\Pdo\Dbal\ConnectorMysqlPdoManager:
+    factory:
+      [
+        '@App\Shared\Infrastructure\Pdo\FactoryMethod\ConnectorDbManager',
+        "create",
+      ]
 
-    App\Synchronisation\Application\Update\ArticleSynchronisation:
-        arguments:
-           $eurowinArticleRepository: '@App\Synchronisation\Infrastructure\Persistance\Pdo\EurowinArticleMappingRepository'
+  App\Shared\Infrastructure\Pdo\FactoryMethod\EurowinDbManager: ~
 
-    App\Synchronisation\Infrastructure\Persistance\Pdo\EurowinArticleRepository:
-        arguments:
-           $sqlPdoFactory: '@App\DbConnectors\Factories\SqlServerPdoFactory'
+  App\Shared\Infrastructure\Pdo\Dbal\SqlServerPdoManager:
+    factory:
+      [
+        '@App\Shared\Infrastructure\Pdo\FactoryMethod\EurowinDbManager',
+        "create",
+      ]
 
-    App\Synchronisation\Infrastructure\Persistance\Pdo\EurowinArticleMappingRepository:
-        arguments:
-           $eurowinArticleRepository: '@App\Synchronisation\Infrastructure\Persistance\Pdo\EurowinArticleRepository'
+  App\Shared\Infrastructure\Pdo\FactoryMethod\BodecallDbManager: ~
+
+  App\Shared\Infrastructure\Pdo\Dbal\MysqlPdoManager:
+    factory:
+      [
+        '@App\Shared\Infrastructure\Pdo\FactoryMethod\BodecallDbManager',
+        "create",
+      ]
+
+  App\Repository\ArticleRepository:
+    arguments:
+      $sqlServerPdoManager: '@App\Shared\Infrastructure\Pdo\Dbal\SqlServerPdoManager'
+
+  App\Article\Infrastructure\Persistance\Pdo\EurowinArticleRepositoryNew:
+    arguments:
+      $sqlServerPdoManager: '@App\Shared\Infrastructure\Pdo\Dbal\SqlServerPdoManager'
+
+  App\Article\Infrastructure\Persistance\Pdo\BodecallArticleRepository:
+    arguments:
+      $mysqlPdoManager: '@App\Shared\Infrastructure\Pdo\Dbal\MysqlPdoManager'
+
+  App\Article\Infrastructure\Persistance\Pdo\ShopperGroupArticleRepository:
+    arguments:
+      $mysqlPdoManager: '@App\Shared\Infrastructure\Pdo\Dbal\MysqlPdoManager'
+
+  App\Connection\Infrastructure\Persistance\Pdo\ConnectionRepository:
+    arguments:
+      $sqlPdoManager: '@App\Shared\Infrastructure\Pdo\Dbal\SqlServerPdoManager'
+      $mysqlPdoManager: '@App\Shared\Infrastructure\Pdo\Dbal\MysqlPdoManager'
+
+  # prettier-ignore
+  app.command_handler_locator:
+    class: Symfony\Component\DependencyInjection\ServiceLocator
+    arguments: 
+      - {
+        App\Article\Application\Synchronization\SynchronizationArticleCommand: '@App\Article\Application\Synchronization\SynchronizationArticleCommandHandler',
+        App\Connection\Application\List\ListConnectionQuery: '@App\Connection\Application\List\ListConnectionQueryHandler',
+        App\Connection\Application\Find\FindConnectionQuery: '@App\Connection\Application\Find\FindConnectionQueryHandler',
+        App\Connection\Application\Edit\EditConnectionCommand: '@App\Connection\Application\Edit\EditConnectionCommandHandler',
+        App\Article\Application\List\ListArticleQuery: '@App\Article\Application\List\ListArticleQueryHandler',
+      }
+
+  App\Shared\Infrastructure\Bus\Command\CommandHandlerResolver:
+    arguments:
+      $locator: "@app.command_handler_locator"
+
+  App\Shared\Infrastructure\Bus\Query\QueryHandlerResolver:
+    arguments:
+      $locator: "@app.command_handler_locator"
+
+  App\Email\NewsletterManager:
+    class: App\Email\NewsletterManager
+    factory: '@App\Email\InvokableNewsletterManagerFactory'
+
+  App\Shared\Infrastructure\Dispatcher\FactoryMethod\EventDispatcherCommandFactory: ~
+
+  App\Shared\Infrastructure\Dispatcher\EventDispatcher:
+    factory:
+      [
+        '@App\Shared\Infrastructure\Dispatcher\FactoryMethod\EventDispatcherCommandFactory',
+        "create",
+      ]
+    arguments:
+      - {
+          App\Article\Application\Synchronization\SynchronizationArticleCommand: '@App\Article\Infrastructure\Listener\TestSubscriber',
+        }
+
+  # prettier-ignore
+  App\Shared\Infrastructure\Bus\Command\CommandBusSync:
+    arguments:
+      $commandHandlerResolver: '@App\Shared\Infrastructure\Bus\Command\CommandHandlerResolver'
+      $middlewares: [
+        '@App\Shared\Infrastructure\Bus\Command\Middleware\QueueMiddleware', 
+        '@App\Shared\Infrastructure\Bus\Command\Middleware\EventDispatcherMiddleware',
+      ]
+
+  App\Shared\Infrastructure\Bus\Query\QueryBus:
+    arguments:
+      $queryHandlerResolver: '@App\Shared\Infrastructure\Bus\Query\QueryHandlerResolver'
+      $middlewares:
+        [
+          '@App\Shared\Infrastructure\Bus\Query\Middleware\EventDispatcherMiddleware',
+        ]
+
+  App\Components\TableComponent:
+    arguments:
+      $queryBus: '@App\Shared\Infrastructure\Bus\Query\QueryBus'
+
+  # App\Components\ArticlesSynchronisationComponent:
+  #   arguments:
+  #     $commandBusSync: '@App\Shared\Infrastructure\Bus\Command\CommandBusSync'
