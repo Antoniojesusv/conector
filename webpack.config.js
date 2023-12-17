@@ -48,9 +48,9 @@ Encore
   .enableVersioning(Encore.isProduction())
 
   // configure Babel
-  // .configureBabel((config) => {
-  //  config.plugins.push("@babel/a-babel-plugin");
-  // })
+  .configureBabel((config) => {
+    config.plugins.push("@babel/a-babel-plugin");
+  })
 
   .configureBabel((config) => {
     config.plugins.push("@babel/plugin-proposal-class-properties");
@@ -78,4 +78,14 @@ Encore
 // uncomment if you're having problems with a jQuery plugin
 //.autoProvidejQuery()
 
-module.exports = Encore.getWebpackConfig();
+// module.exports = Encore.getWebpackConfig();
+
+let config = Encore.getWebpackConfig();
+config.resolve.mainFields = ["svelte", "browser", "module", "main"];
+config.resolve.extensions = [".mjs", ".js", ".svelte"];
+config.resolve.conditionNames = ["svelte", "browser", "import"];
+
+let svelte = config.module.rules.pop();
+config.module.rules.unshift(svelte);
+
+module.exports = config;
