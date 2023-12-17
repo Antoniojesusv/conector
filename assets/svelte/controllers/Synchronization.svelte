@@ -7,7 +7,7 @@
     let currentPercentage = 0;
 
     onMount(async () => {
-		const res = await fetch(`http://localhost/shop/data`);
+		const res = await fetch(`shop/data`);
 		let data = await res.json();
         rate = data['rate'];
         store = data['store'];
@@ -15,7 +15,7 @@
 	});
 
     async function synchronize() {
-        const response = await fetch('http://localhost/synchronize', {
+        const response = await fetch('synchronize', {
             method: 'POST',
             headers: {
                 'Content-Type': 'text/event-stream'

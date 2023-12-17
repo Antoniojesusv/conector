@@ -2,7 +2,7 @@
 	let columns = ["Código", "Precio", "Stock", "Sincronizado", "Total de articulos"]
 
     async function fetchData() {
-		const res = await fetch(`http://localhost/log/article`);
+		const res = await fetch(`log/article`);
 		const articles = await res.json();
 
 		if (res.ok) {
