@@ -59,16 +59,16 @@ final class SynchronizationArticleCommandHandler implements CommandHandler
                 continue;
             }
 
-            $product = $this->shopperGroupArticleRepository->getShopperGroupById($product);
+            // $product = $this->shopperGroupArticleRepository->getShopperGroupById($product);
 
-            if (!$product->existShopperGroup()) {
-                $this->bodecallArticleRepository->save($article, $product);
-                $row = $this->bodecallArticleRepository->getProductPricesRow($product);
-                $this->shopperGroupArticleRepository->createShopperGroup($article, $product, $row);
-            } else {
-                $this->bodecallArticleRepository->save($article, $product);
-                $this->shopperGroupArticleRepository->save($article, $product);
-            }
+            // if (!$product->existShopperGroup()) {
+            //     $this->bodecallArticleRepository->save($article, $product);
+            //     $row = $this->bodecallArticleRepository->getProductPricesRow($product);
+            //     $this->shopperGroupArticleRepository->createShopperGroup($article, $product, $row);
+            // } else {
+            $this->bodecallArticleRepository->save($article, $product);
+            //     $this->shopperGroupArticleRepository->save($article, $product);
+            // }
 
             $totalArticle = $article->totalArticle();
             $articleLog = $this->articleLogFactory->create($article, $totalArticle, 'Si');

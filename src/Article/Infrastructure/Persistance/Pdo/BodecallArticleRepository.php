@@ -58,14 +58,23 @@ class BodecallArticleRepository
         $sqlStock .= "SET product_in_stock = :final ";
         $sqlStock .= "WHERE virtuemart_product_id = :code";
 
+        $sqlPrice = "UPDATE frthv_virtuemart_product_prices ";
+        $sqlPrice .= "SET product_price = :price ";
+        $sqlPrice .= "WHERE virtuemart_product_id = :productId ";
+
         $queryStock = $this->connection->prepare($sqlStock);
+        $queryPrice = $this->connection->prepare($sqlPrice);
 
         $productId = $product->id();
         $stock = $article->stock();
+        $price = $article->price();
 
         $queryStock->bindParam(":code", $productId, \PDO::PARAM_INT);
         $queryStock->bindParam(":final", $stock, \PDO::PARAM_STR);
+        $queryPrice->bindParam(":price", $price, \PDO::PARAM_STR);
+        $queryPrice->bindParam(":productId", $productId, \PDO::PARAM_STR);
 
         $queryStock->execute();
+        $queryPrice->execute();
     }
 }

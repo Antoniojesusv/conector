@@ -4,6 +4,7 @@ namespace App\Article\Domain;
 
 final class ShopperGroupId
 {
+    //TODO WE HAVE TO MAP ALL FEE WITH ITS CHOPPER GROUPS
     const SHOPPER_GROUP_MAPPED_TO_RATE = [
         '0' => '01',
         '5' => '88'
@@ -27,12 +28,13 @@ final class ShopperGroupId
     }
 
     private function setId(string $rate): void
-    {
+    {   //TODO WE HAVE TO THINK WHETER TO THROW THE EXCEPTION OR SET THE ID WITH A DEFAULT CHOPPER GROUP
         if (!in_array($rate, $this::SHOPPER_GROUP_MAPPED_TO_RATE)) {
-            throw new TheRateNotExist("La tarifa {$rate} no existe");
+            //throw new TheRateNotExist("La tarifa {$rate} no existe");
+            $this->id = '0';
+        } else {
+            $this->id = array_search($rate, $this::SHOPPER_GROUP_MAPPED_TO_RATE);
         }
-
-        $this->id = array_search($rate, $this::SHOPPER_GROUP_MAPPED_TO_RATE);
     }
 
     public function __toString(): string
