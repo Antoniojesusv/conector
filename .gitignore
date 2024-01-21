@@ -48,4 +48,5 @@ yarn-error.log
 ###> conector ###
 /.phpcs-cache
 .docker/php/xdebug.ini
+*.zip
 ###< conector ###
