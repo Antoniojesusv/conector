@@ -58,7 +58,7 @@ class SynchronisationService
 
         preg_match("/^C:(.*)/", $folderPath, $match);
 
-        $serverName = "\\\\DOTEW";
+        $serverName = "\\\\SERVER23";
         $path = strtoupper($match[1]);
 
         $folderPath = "$serverName$path";

@@ -31,7 +31,7 @@ class ArticleRepository implements ArticleRepositoryI
         ContainerBagInterface $params
     ) {
         $this->params = $params;
-        $this->from = 'articulo';
+        $this->from = 'art_foto';
         $this->sqlServerPdoManager = $sqlServerPdoManager;
         $this->connection = $this->sqlServerPdoManager->getConnection();
     }
@@ -49,7 +49,7 @@ class ArticleRepository implements ArticleRepositoryI
 
     public function save(iterable $entityList): void
     {
-        ini_set('max_execution_time', '1500');
+        // ini_set('max_execution_time', '1500');
 
         // $this->length = count($entityList);
 
@@ -62,7 +62,7 @@ class ArticleRepository implements ArticleRepositoryI
 
         $sql = "UPDATE " . $this->from . " ";
         $sql .= "SET imagen = :imagePath ";
-        $sql .= "WHERE codigo = :code";
+        $sql .= "WHERE articulo = :code";
 
         $query = $this->connection->prepare($sql);
 
@@ -88,14 +88,17 @@ class ArticleRepository implements ArticleRepositoryI
                     if (in_array($message, $this::LENGTH_ERROR_MESSAGE)) {
                         $imagePath = $article->getEurowinImage();
 
-                        throw new Error(json_encode(
-                            [
-                                "Mensage" => "La longitud de la ruta de la imagen supera la longitud permitida (90)",
-                                "Articulo" => $code,
-                                "Ruta" => $imagePath,
-                                "Longitud" => strlen($imagePath)
-                            ]
-                        ), JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+                        throw new Error(
+                            json_encode(
+                                [
+                                    "Mensage" => "La longitud de la ruta de la imagen supera la longitud permitida (90)",
+                                    "Articulo" => $code,
+                                    "Ruta" => $imagePath,
+                                    "Longitud" => strlen($imagePath)
+                                ]
+                            ),
+                            JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
+                        );
                     }
 
                     throw new Error($message);
@@ -156,7 +159,7 @@ class ArticleRepository implements ArticleRepositoryI
     private function existRow(ArticleEntity $articleEntity): bool
     {
         $sql = "SELECT TOP 1 * FROM " . $this->from . " ";
-        $sql .= "WHERE codigo=:code";
+        $sql .= "WHERE articulo=:code";
 
         $query = $this->connection->prepare($sql);
 
