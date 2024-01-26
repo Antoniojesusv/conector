@@ -15,20 +15,20 @@ class NmConnectionRepository implements NmConnectionRepositoryI
     const TYPES = ['sqlServer', 'mysqlServer'];
 
     const SQL_SERVER_PATTERNS = [
-        '/SQL_SERVER_USER=.*/',
-        '/SA_PASSWORD=.*/',
-        '/SQL_SERVER_ADDRESS=.*/',
-        '/SQL_SERVER_DATABASE=.*/',
-        '/SQL_SERVER_EXPOSED_PORT=.*/',
-        '/SQL_SERVER_AUTHENTICATION_METHOD=.*/'
+        '/EUROWIN_DB_USER=.*/',
+        '/EUROWIN_DB_PASSWORD=.*/',
+        '/EUROWIN_DB_ADDRESS=.*/',
+        '/EUROWIN_DB_DATABASE=.*/',
+        '/EUROWIN_DB_EXPOSED_PORT=.*/',
+        '/EUROWIN_DB_AUTHENTICATION_METHOD=.*/'
     ];
 
     const MYSQL_SERVER_PATTERNS = [
-        '/MYSQL_USER=.*/',
-        '/MYSQL_PASSWORD=.*/',
-        '/MYSQL_ADDRESS=.*/',
-        '/MYSQL_DATABASE=.*/',
-        '/MYSQL_EXPOSED_PORT=.*/'
+        '/BODECALL_DB_USER=.*/',
+        '/BODECALL_DB_PASSWORD=.*/',
+        '/BODECALL_DB_ADDRESS=.*/',
+        '/BODECALL_DB_DATABASE=.*/',
+        '/BODECALL_DB_EXPOSED_PORT=.*/'
     ];
 
     private PdoFactoryI $sqlPdoFactory;
@@ -120,12 +120,12 @@ class NmConnectionRepository implements NmConnectionRepositoryI
         $authenticationMethod = 'nm';
 
         $replacements = [];
-        $replacements[0] = "SQL_SERVER_USER=$user";
-        $replacements[1] = "SA_PASSWORD=\"$password\"";
-        $replacements[2] = "SQL_SERVER_ADDRESS=\"$address\"";
-        $replacements[3] = "SQL_SERVER_DATABASE=\"$database\"";
-        $replacements[4] = "SQL_SERVER_EXPOSED_PORT=$exposedPort";
-        $replacements[5] = "SQL_SERVER_AUTHENTICATION_METHOD=\"$authenticationMethod\"";
+        $replacements[0] = "EUROWIN_DB_USER=$user";
+        $replacements[1] = "EUROWIN_DB_PASSWORD=\"$password\"";
+        $replacements[2] = "EUROWIN_DB_ADDRESS=\"$address\"";
+        $replacements[3] = "EUROWIN_DB_DATABASE=\"$database\"";
+        $replacements[4] = "EUROWIN_DB_EXPOSED_PORT=$exposedPort";
+        $replacements[5] = "EUROWIN_DB_AUTHENTICATION_METHOD=\"$authenticationMethod\"";
 
         return preg_replace($this::SQL_SERVER_PATTERNS, $replacements, $envFile);
     }
@@ -139,11 +139,11 @@ class NmConnectionRepository implements NmConnectionRepositoryI
         $exposedPort = $connectionEntity->getExposedPort();
 
         $replacements = [];
-        $replacements[0] = "MYSQL_USER=$user";
-        $replacements[1] = "MYSQL_PASSWORD=\"$password\"";
-        $replacements[2] = "MYSQL_ADDRESS=\"$address\"";
-        $replacements[3] = "MYSQL_DATABASE=\"$database\"";
-        $replacements[4] = "MYSQL_EXPOSED_PORT=$exposedPort";
+        $replacements[0] = "BODECALL_DB_USER=$user";
+        $replacements[1] = "BODECALL_DB_PASSWORD=\"$password\"";
+        $replacements[2] = "BODECALL_DB_ADDRESS=\"$address\"";
+        $replacements[3] = "BODECALL_DB_DATABASE=\"$database\"";
+        $replacements[4] = "BODECALL_DB_EXPOSED_PORT=$exposedPort";
 
         return preg_replace($this::MYSQL_SERVER_PATTERNS, $replacements, $envFile);
     }

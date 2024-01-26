@@ -12,9 +12,9 @@ use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 class UwConnectionRepository implements UwConnectionRepositoryI
 {
     const SQL_SERVER_PATTERNS = [
-        '/SQL_SERVER_DATABASE=.*/',
+        '/EUROWIN_DB_DATABASE=.*/',
         '/SERVER_SQL=.*/',
-        '/SQL_SERVER_AUTHENTICATION_METHOD=.*/'
+        '/EUROWIN_DB_AUTHENTICATION_METHOD=.*/'
     ];
 
     private ConnectionFactoryI $uWConnectionFactory;
@@ -50,7 +50,7 @@ class UwConnectionRepository implements UwConnectionRepositoryI
     private function getParams(): array
     {
         $connectionParams = [];
-        
+
         $connectionParams['database'] = $this->params->get('sql.database');
         $connectionParams['server'] = $this->params->get('sql.server');
         $connectionParams['status'] = $this->sqlPdoConnector->hasConnection();
@@ -70,9 +70,9 @@ class UwConnectionRepository implements UwConnectionRepositoryI
         $authenticationMethod = 'uw';
 
         $replacements = [];
-        $replacements[0] = "SQL_SERVER_DATABASE=\"$database\"";
+        $replacements[0] = "EUROWIN_DB_DATABASE=\"$database\"";
         $replacements[1] = "SERVER_SQL=\"$server\"";
-        $replacements[2] = "SQL_SERVER_AUTHENTICATION_METHOD=\"$authenticationMethod\"";
+        $replacements[2] = "EUROWIN_DB_AUTHENTICATION_METHOD=\"$authenticationMethod\"";
 
         return preg_replace($this::SQL_SERVER_PATTERNS, $replacements, $envFile);
     }
