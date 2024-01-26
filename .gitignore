@@ -20,8 +20,6 @@
 ###< Mysql docker container ###
 
 ###> Zip lambda service ###
-/.env.backup
-/.env.backup.server
 /tools/
 /.vscode/
 /.php-cs-fixer.cache
