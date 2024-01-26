@@ -3,8 +3,7 @@ ARG TIMEZONE
 
 ENV ACCEPT_EULA=Y
 
-COPY mirth-pool-1.conf /usr/local/etc/php-fpm.d/mirth-pool-1.conf
-COPY mirth-pool-2.conf /usr/local/etc/php-fpm.d/mirth-pool-2.conf
+COPY conector-pool-1.conf /usr/local/etc/php-fpm.d/
 
 RUN mv /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
 
