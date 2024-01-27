@@ -9,7 +9,7 @@ use App\Form\NmConnectionType;
 use App\Model\Database\DatabaseService;
 use App\Repository\NmConnectionRepository;
 use App\Repository\UwConnectionRepository;
-use App\Shared\Infrastructure\Bus\Command\CommandBusSync;
+use App\Shared\Infrastructure\Bus\Command\CommandBus;
 use App\Shared\Infrastructure\Bus\Query\QueryBus;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,7 +37,7 @@ class DatabaseController extends AbstractController
         // NmConnectionRepository $nmConnectionRepository,
         // UwConnectionRepository $uWconnectionRepository,
         QueryBus $queryBus,
-        CommandBusSync $commandBusSync,
+        CommandBus $commandBus,
     ): Response {
         // $connectionModel = new UwConnectionModel();
         // $uWconnectionEntity = $uWconnectionRepository->get();
@@ -87,7 +87,7 @@ class DatabaseController extends AbstractController
             }
 
             $command = EditConnectionCommand::createFromData(...$data);
-            $commandBusSync->dispatch($command);
+            $commandBus->dispatch($command);
             // $databaseService->persist($data, $authentication);
             return $this->redirectToRoute('database_index');
         }

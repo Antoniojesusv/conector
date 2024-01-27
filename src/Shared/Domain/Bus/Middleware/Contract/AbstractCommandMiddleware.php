@@ -6,20 +6,18 @@ namespace App\Shared\Domain\Bus\Middleware\Contract;
 
 use App\Shared\Domain\Bus\Contract\Message;
 
-abstract class MiddlewareBase implements Middleware
+abstract class AbstractCommandMiddleware implements Middleware
 {
     /**
      * Summary of handle
      * @param \App\Shared\Domain\Bus\Contract\Message $message
      * @param \Closure|null $next
-     * @return mixed
+     * @return void
      */
-    public function handle(Message $message, \Closure $next = null): mixed
+    public function handle(Message $message, \Closure $next = null): void
     {
         if (!is_null($next)) {
-            return $next($message);
+            $next($message);
         }
-
-        return null;
     }
 }

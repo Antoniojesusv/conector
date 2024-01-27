@@ -2,13 +2,12 @@
 
 namespace App\Controller;
 
-use App\Article\Application\Synchronization\SynchronizationArticleCommand;
-use App\Shared\Domain\Bus\Command\Contract\CommandBus;
+use App\Article\Application\Synchronization\SynchronizationArticleQuery;
+use App\Shared\Domain\Bus\Query\Contract\QueryBus;
 use Hhxsv5\SSE\Event;
 use Hhxsv5\SSE\SSE;
 use Hhxsv5\SSE\StopSSEException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedJsonResponse;
@@ -18,9 +17,9 @@ use Symfony\Component\Routing\Annotation\Route;
 class SynchronisationController extends AbstractController
 {
     public function __construct(
-        private CommandBus $commandBusSync,
+        private QueryBus $queryBus,
     ) {
-        $this->commandBusSync = $commandBusSync;
+        $this->queryBus = $queryBus;
     }
 
     /**
@@ -38,11 +37,12 @@ class SynchronisationController extends AbstractController
         $rate = $content['rate'];
         $store = $content['store'];
         $company = $content['company'];
-        $command = new SynchronizationArticleCommand($rate, $store, $company);
+        $query = new SynchronizationArticleQuery($rate, $store, $company);
+
         try {
             return new StreamedJsonResponse(
                 [
-                    $this->commandBusSync->dispatch($command)
+                    $this->queryBus->dispatch($query)
                 ],
             );
         } catch (\Error $e) {

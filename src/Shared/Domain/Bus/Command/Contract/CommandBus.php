@@ -5,5 +5,5 @@ namespace App\Shared\Domain\Bus\Command\Contract;
 
 interface CommandBus
 {
-    public function dispatch(Command $command): mixed;
+    public function dispatch(Command $command): void;
 }

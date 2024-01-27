@@ -8,12 +8,12 @@ use DateTimeImmutable;
 
 abstract class DomainEvent implements Event
 {
-    protected readonly array $metadata;
-    protected readonly DateTimeImmutable $createdAt;
+    protected array $metadata;
+    protected readonly DateTimeImmutable $occurredOn;
 
     public function __construct(array $metadata)
     {
         $this->metadata = $metadata;
-        $this->createdAt = new DateTimeImmutable();
+        $this->ocurredOn = new DateTimeImmutable();
     }
 }

@@ -5,7 +5,7 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 
 parameters:
-  mysql.user: "%env(BODECALL_DB_USER)%"
+  mysql.user: "root"
   mysql.password: "%env(BODECALL_DB_PASSWORD)%"
   mysql.address: "%env(BODECALL_DB_ADDRESS)%"
   mysql.database: "%env(BODECALL_DB_DATABASE)%"
@@ -149,18 +149,14 @@ services:
     class: Symfony\Component\DependencyInjection\ServiceLocator
     arguments: 
       - {
-        App\Article\Application\Synchronization\SynchronizationArticleCommand: '@App\Article\Application\Synchronization\SynchronizationArticleCommandHandler',
+        App\Article\Application\Synchronization\SynchronizationArticleQuery: '@App\Article\Application\Synchronization\SynchronizationArticleQueryHandler',
         App\Connection\Application\List\ListConnectionQuery: '@App\Connection\Application\List\ListConnectionQueryHandler',
         App\Connection\Application\Find\FindConnectionQuery: '@App\Connection\Application\Find\FindConnectionQueryHandler',
         App\Connection\Application\Edit\EditConnectionCommand: '@App\Connection\Application\Edit\EditConnectionCommandHandler',
         App\Article\Application\List\ListArticleQuery: '@App\Article\Application\List\ListArticleQueryHandler',
       }
 
-  App\Shared\Infrastructure\Bus\Command\CommandHandlerResolver:
-    arguments:
-      $locator: "@app.command_handler_locator"
-
-  App\Shared\Infrastructure\Bus\Query\QueryHandlerResolver:
+  App\Shared\Infrastructure\Bus\HandlerResolver:
     arguments:
       $locator: "@app.command_handler_locator"
 
@@ -182,9 +178,9 @@ services:
         }
 
   # prettier-ignore
-  App\Shared\Infrastructure\Bus\Command\CommandBusSync:
+  App\Shared\Infrastructure\Bus\Command\CommandBus:
     arguments:
-      $commandHandlerResolver: '@App\Shared\Infrastructure\Bus\Command\CommandHandlerResolver'
+      $handlerResolver: '@App\Shared\Infrastructure\Bus\HandlerResolver'
       $middlewares: [
         '@App\Shared\Infrastructure\Bus\Command\Middleware\QueueMiddleware', 
         '@App\Shared\Infrastructure\Bus\Command\Middleware\EventDispatcherMiddleware',
@@ -192,7 +188,7 @@ services:
 
   App\Shared\Infrastructure\Bus\Query\QueryBus:
     arguments:
-      $queryHandlerResolver: '@App\Shared\Infrastructure\Bus\Query\QueryHandlerResolver'
+      $handlerResolver: '@App\Shared\Infrastructure\Bus\HandlerResolver'
       $middlewares:
         [
           '@App\Shared\Infrastructure\Bus\Query\Middleware\EventDispatcherMiddleware',
@@ -204,4 +200,4 @@ services:
 
   # App\Components\ArticlesSynchronisationComponent:
   #   arguments:
-  #     $commandBusSync: '@App\Shared\Infrastructure\Bus\Command\CommandBusSync'
+  #     $commandBus: '@App\Shared\Infrastructure\Bus\Command\CommandBus'

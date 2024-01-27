@@ -5,5 +5,5 @@ namespace App\Shared\Domain\Bus\Query\Contract;
 
 interface QueryBus
 {
-    public function dispatch(Query $command): mixed;
+    public function dispatch(Query $query): mixed;
 }

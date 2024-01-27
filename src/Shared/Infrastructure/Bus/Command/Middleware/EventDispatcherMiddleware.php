@@ -3,11 +3,11 @@
 declare(strict_types=1);
 namespace App\Shared\Infrastructure\Bus\Command\Middleware;
 
-use App\Shared\Domain\Bus\Middleware\Contract\MiddlewareBase;
 use \App\Shared\Domain\Bus\Contract\Message;
+use App\Shared\Domain\Bus\Middleware\Contract\AbstractCommandMiddleware;
 use App\Shared\Domain\Dispatcher\Dispatcher;
 
-final class EventDispatcherMiddleware extends MiddlewareBase
+final class EventDispatcherMiddleware extends AbstractCommandMiddleware
 {
 
     public function __construct(private Dispatcher $eventDispatcher)
@@ -15,10 +15,10 @@ final class EventDispatcherMiddleware extends MiddlewareBase
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    public function __invoke(Message $message, $next = null): mixed
+    public function __invoke(Message $message, $next = null): void
     {
         $this->eventDispatcher->dispatch($message::class, ['payload' => 'test']);
 
-        return parent::handle($message, $next);
+        parent::handle($message, $next);
     }
 }

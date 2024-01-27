@@ -13,18 +13,8 @@ final class FindConnectionQuery extends Query
         parent::__construct();
     }
 
-    public function getMessageType(): string
-    {
-        return self::MESSAGE_TYPE;
-    }
-
     public function Type(): string
     {
         return $this->type;
-    }
-
-    public function id(): string
-    {
-        return $this->uuid;
     }
 }

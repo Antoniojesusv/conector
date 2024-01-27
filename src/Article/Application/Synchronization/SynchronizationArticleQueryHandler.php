@@ -8,11 +8,11 @@ use App\Article\Infrastructure\Persistance\Pdo\ArticleRepository;
 use App\Article\Infrastructure\Persistance\Pdo\BodecallArticleRepository;
 use App\Article\Infrastructure\Persistance\Pdo\EurowinArticleRepositoryNew;
 use App\Article\Infrastructure\Persistance\Pdo\ShopperGroupArticleRepository;
-use App\Shared\Domain\Bus\Command\Contract\Command;
-use App\Shared\Domain\Bus\Command\Contract\CommandHandler;
+use App\Shared\Domain\Bus\Query\Contract\Query;
+use App\Shared\Domain\Bus\Query\Contract\QueryHandler;
 use App\Shared\Infrastructure\Dispatcher\EventDispatcher;
 
-final class SynchronizationArticleCommandHandler implements CommandHandler
+final class SynchronizationArticleQueryHandler implements QueryHandler
 {
     public function __construct(
         private EurowinArticleRepositoryNew $eurowinArticleRepositoryNew,
@@ -32,14 +32,14 @@ final class SynchronizationArticleCommandHandler implements CommandHandler
 
     /**
      * Summary of __invoke
-     * @param \App\Shared\Domain\Bus\Command\Contract\Command $command
+     * @param \App\Shared\Domain\Bus\Query\Contract\Query $query
      * @return mixed
      */
-    public function __invoke(Command $command): mixed
+    public function __invoke(Query $query): mixed
     {
-        $rate = $command->rate();
-        $store = $command->store();
-        $company = $command->company();
+        $rate = $query->rate();
+        $store = $query->store();
+        $company = $query->company();
 
         $articleGenerator = $this->eurowinArticleRepositoryNew->getAllByRateStockStoreAndCompany($rate, $store, $company);
 

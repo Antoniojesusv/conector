@@ -36,11 +36,6 @@ final class EditConnectionCommand extends Command
         parent::__construct();
     }
 
-    public function getMessageType(): string
-    {
-        return self::MESSAGE_TYPE;
-    }
-
     public function user(): string
     {
         return $this->user;
@@ -69,10 +64,5 @@ final class EditConnectionCommand extends Command
     public function Type(): string
     {
         return $this->type;
-    }
-
-    public function id(): string
-    {
-        return $this->uuid;
     }
 }
