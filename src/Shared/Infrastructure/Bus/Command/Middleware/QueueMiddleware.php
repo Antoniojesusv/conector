@@ -3,14 +3,15 @@
 declare(strict_types=1);
 namespace App\Shared\Infrastructure\Bus\Command\Middleware;
 
-use App\Shared\Domain\Bus\Middleware\Contract\MiddlewareBase;
-use \App\Shared\Domain\Bus\Contract\Message;
 
-final class QueueMiddleware extends MiddlewareBase
+use \App\Shared\Domain\Bus\Contract\Message;
+use App\Shared\Domain\Bus\Middleware\Contract\AbstractCommandMiddleware;
+
+final class QueueMiddleware extends AbstractCommandMiddleware
 {
     private array $queue = [];
     private bool $isDispatching = false;
-    public function __invoke(Message $message, $next = null): mixed
+    public function __invoke(Message $message, $next = null): void
     {
         $this->queue[] = $message;
 
@@ -19,13 +20,11 @@ final class QueueMiddleware extends MiddlewareBase
 
             try {
                 while ($message = array_shift($this->queue)) {
-                    return parent::handle($message, $next);
+                    parent::handle($message, $next);
                 }
             } finally {
                 $this->isDispatching = false;
             }
         }
-
-        return null;
     }
 }

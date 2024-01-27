@@ -11,14 +11,4 @@ final class ListArticleQuery extends Query
     ) {
         parent::__construct();
     }
-
-    public function getMessageType(): string
-    {
-        return self::MESSAGE_TYPE;
-    }
-
-    public function id(): string
-    {
-        return $this->uuid;
-    }
 }

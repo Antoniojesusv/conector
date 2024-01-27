@@ -3,7 +3,9 @@
 declare(strict_types=1);
 namespace App\Shared\Domain\Bus\Command\Contract;
 
-interface CommandHandler
+use App\Shared\Domain\Bus\Contract\BusHandler;
+
+interface CommandHandler extends BusHandler
 {
-    public function __invoke(Command $message): mixed;
+    public function __invoke(Command $command): void;
 }
