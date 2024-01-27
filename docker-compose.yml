@@ -57,8 +57,6 @@ services:
       - ./.docker/bodecall-db/docker-entrypoint-initdb:/docker-entrypoint-initdb.d
     ports:
       - "${BODECALL_DB_EXPOSED_PORT}:${BODECALL_DB_PORT}"
-    expose:
-      - ${BODECALL_DB_EXPOSED_PORT}
 
   conector-db:
     container_name: conector-db
@@ -73,12 +71,11 @@ services:
       MYSQL_DATABASE: ${CONECTOR_DB_DATABASE}
       MYSQL_USER: ${CONECTOR_DB_USER}
       MYSQL_PASSWORD: ${CONECTOR_DB_PASSWORD}
+      MYSQL_TCP_PORT: ${CONECTOR_DB_PORT}
     volumes:
       - ./conector-data:/var/lib/mysql
     ports:
       - "${CONECTOR_DB_EXPOSED_PORT}:${CONECTOR_DB_PORT}"
-    expose:
-      - ${CONECTOR_DB_EXPOSED_PORT}
 
   eurowin-db:
     container_name: eurowin-db
