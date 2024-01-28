@@ -21,7 +21,7 @@ abstract class AbstractMessage implements Message
         $this->createdAt = new DateTimeImmutable();
     }
 
-    public function id(): string
+    public function uuid(): string
     {
         return $this->uuid;
     }

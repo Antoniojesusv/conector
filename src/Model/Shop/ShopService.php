@@ -3,14 +3,14 @@
 namespace App\Model\Shop;
 
 use App\Model\Shop\ShopEntity;
-use App\Model\Shop\ShopRepositoryI;
+use App\Model\Shop\OldShopRepositoryI;
 
 class ShopService
 {
-    private ShopRepositoryI $shopRepository;
+    private OldShopRepositoryI $shopRepository;
 
     public function __construct(
-        ShopRepositoryI $shopRepository
+        OldShopRepositoryI $shopRepository
     ) {
         $this->shopRepository = $shopRepository;
     }

@@ -7,17 +7,12 @@ final class Store
 {
     public function __construct(
         private StoreId $storeId,
-        private StoreType $storeType = StoreType::all
     ) {
+        $this->storeId = $storeId;
     }
 
     public function id(): StoreId
     {
         return $this->storeId;
-    }
-
-    public function value(): string
-    {
-        return $this->storeType->value;
     }
 }

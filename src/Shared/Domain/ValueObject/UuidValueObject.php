@@ -3,34 +3,30 @@
 declare(strict_types=1);
 namespace App\Shared\Domain\ValueObject;
 
-;
-use App\Shared\Domain\Validation\Assertion;
-use Ramsey\Uuid\Uuid as RamseyUuid;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
-abstract class UuidValueObject
+class UuidValueObject
 {
-    public function __construct(protected readonly string $uuid)
+    private UuidInterface $uuid;
+
+    private function __construct(UuidInterface $uuid)
     {
-        Assertion::isValidUuid($uuid);
+        $this->uuid = $uuid;
     }
 
-    public static function random(): self
+    public static function generate(): self
     {
-        return new static(RamseyUuid::uuid4()->toString());
+        return new self(Uuid::uuid4());
     }
 
-    public function value(): string
+    public static function fromString(string $uuid): self
     {
-        return $this->uuid;
-    }
-
-    public function isEquals(UuidValueObject $other): bool
-    {
-        return $this->value() === $other->value();
+        return new self(Uuid::fromString($uuid));
     }
 
     public function __toString(): string
     {
-        return $this->value();
+        return $this->uuid->toString();
     }
 }
