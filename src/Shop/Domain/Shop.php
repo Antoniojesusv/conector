@@ -7,10 +7,14 @@ final class Shop
 {
     public function __construct(
         private ShopId $shopId,
-        private Rate $rate,
+        private ShopName $name,
+        private ShopRate $rate,
         private Store $store
     ) {
         $this->shopId = $shopId;
+        $this->name = $name;
+        $this->rate = $rate;
+        $this->store = $store;
     }
 
     public function id(): ShopId
@@ -18,13 +22,23 @@ final class Shop
         return $this->shopId;
     }
 
-    public function Rate(): Rate
+    public function name(): string
     {
-        return $this->rate;
+        return $this->name->value();
     }
 
-    public function Store(): Store
+    public function rate(): string
+    {
+        return $this->rate->value();
+    }
+
+    public function store(): Store
     {
         return $this->store;
+    }
+
+    public function isEquals(Shop $other): bool
+    {
+        return $this->id() === $other->id();
     }
 }

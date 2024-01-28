@@ -6,6 +6,6 @@ namespace App\Shared\Domain\Bus\Contract;
 
 interface Message
 {
-    public function id(): string;
+    public function uuid(): string;
     public function getType(): string;
 }

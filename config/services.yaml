@@ -154,6 +154,7 @@ services:
         App\Connection\Application\Find\FindConnectionQuery: '@App\Connection\Application\Find\FindConnectionQueryHandler',
         App\Connection\Application\Edit\EditConnectionCommand: '@App\Connection\Application\Edit\EditConnectionCommandHandler',
         App\Article\Application\List\ListArticleQuery: '@App\Article\Application\List\ListArticleQueryHandler',
+        App\Shop\Application\Create\CreateShopCommand: '@App\Shop\Application\Create\CreateShopCommandHandler'
       }
 
   App\Shared\Infrastructure\Bus\HandlerResolver:

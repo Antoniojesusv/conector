@@ -6,7 +6,7 @@ use App\Form\ShopModel;
 use App\Form\ShopType;
 use App\Model\Shop\ShopService;
 // use App\Repository\ArticleProductRepository;
-use App\Repository\ShopRepository;
+use App\Repository\OldShopRepository;
 use App\Repository\Stocks2Repository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +18,7 @@ class ShopController extends AbstractController
     /**
      * @Route("/shop", name="shop_index")
      */
-    public function index(ShopRepository $shopRepository): Response
+    public function index(OldShopRepository $shopRepository): Response
     {
         $shopEntity = $shopRepository->get();
 
@@ -32,7 +32,7 @@ class ShopController extends AbstractController
      */
     public function edit(
         Request $request,
-        ShopRepository $shopRepository,
+        OldShopRepository $shopRepository,
         Stocks2Repository $stocks2Repository,
         ShopService $shopService,
         //ArticleProductRepository $articleRepository,
@@ -68,7 +68,7 @@ class ShopController extends AbstractController
      * @Route("/shop/data", name="shop_get", methods={"GET"})
      */
     public function getShop(
-        ShopRepository $shopRepository,
+        OldShopRepository $shopRepository,
     ): Response {
         $shopModel = new ShopModel();
 
